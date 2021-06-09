@@ -1,0 +1,38 @@
+# visit https://github.com/mojombo/jekyll/wiki/Configuration for more settings
+
+paginate: 10 # pagination based on number of posts
+paginate_path: "page:num"
+exclude: ["README.md"] # files to exclude
+highlighter: rouge
+markdown: kramdown
+disqus: stdnoerr_blog
+google_analytics: stdnoerr_blog
+title: stdnoerr's blog
+
+defaults:
+  -
+    scope:
+      path: "" # empty string for all files
+    values:
+      title: stdnoerr's blog
+
+description: Stylish Jekyll Theme
+author:
+  name: stdnoerr
+  email: stdnoerr@gmail.com
+  github: stdnoerr
+  twitter: stdnoerr
+  bio: CTFer | pwner | wanna learn everything
+  email_md5: fe66ffe3df09aee77973014c55d36d1c
+
+rss_path: feed.xml
+categories_path: categories.html
+tags_path: tags.html
+
+# set it as url of an image
+# sidebar_background_image: https://www.dropbox.com/s/g9h23zrycedxtk5/sky.png?raw=1
+
+BASE_PATH:
+
+plugins:
+  - jekyll-paginate
