@@ -7,27 +7,30 @@
 		<atom:link href="/feed.xml" rel="self" type="application/rss+xml" />
 		
 			<item>
-				<title>stdnoerr's blog</title>
-				<description>
-</description>
-				<pubDate>Wed, 09 Jun 2021 00:00:00 +0500</pubDate>
-				<link>/2021/06/09/check.html</link>
-				<guid isPermaLink="true">/2021/06/09/check.html</guid>
-			</item>
-		
-			<item>
-				<title>My First Post</title>
-				<description>
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;():&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bar&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+				<title>Basics of assembly</title>
+				<description>&lt;p&gt;Here is an introduction of some assembly instruction which are useful while doing code analysis&lt;/p&gt;
 
-&lt;div class=&quot;language-py highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;():&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h1 id=&quot;what-is-assembly&quot;&gt;What is assembly?&lt;/h1&gt;
+&lt;p&gt;Assembly is a low-level programming language which is designed to interact with the computer’s hardware directly. Essentially, it is the opcode representation of machine language. Because of this, it is also called symbolic machine code.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;instruction&lt;/th&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;purpose&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;push&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;pop&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
 </description>
-				<pubDate>Wed, 10 Jun 2020 02:00:00 +0500</pubDate>
-				<link>/test/2020/06/10/test.html</link>
-				<guid isPermaLink="true">/test/2020/06/10/test.html</guid>
+				<pubDate>Thu, 10 Jun 2021 13:52:00 +0500</pubDate>
+				<link>/basics/2021/06/10/basics-of-assembly.html</link>
+				<guid isPermaLink="true">/basics/2021/06/10/basics-of-assembly.html</guid>
 			</item>
 		
 	</channel>
