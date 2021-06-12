@@ -9,7 +9,7 @@
 			<item>
 				<title>ret2shellcode</title>
 				<description>&lt;p&gt;We will take a look at a ret2shellcode challenge.
-The files can be found &lt;a href=&quot;http://google.com&quot;&gt;here&lt;/a&gt;&lt;/p&gt;
+The files can be found &lt;a href=&quot;https://github.com/stdnoerr/stdnoerr.github.io/tree/master/files/ret2shellcode&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
 
 &lt;h1 id=&quot;analysis&quot;&gt;Analysis&lt;/h1&gt;
 &lt;h2 id=&quot;code-analysis&quot;&gt;Code Analysis&lt;/h2&gt;
