@@ -1,0 +1,38 @@
+<p>We will take a look at a ret2shellcode challenge.
+The files can be found <a href="http://google.com">here</a></p>
+
+<h1 id="analysis">Analysis</h1>
+<h2 id="code-analysis">Code Analysis</h2>
+<p>Lets take a look at the source code.</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include&lt;stdio.h&gt;
+</span>
+<span class="c1">// Compiled with: gcc ret2shellcode.c -o ret2shellcode -z execstack -no-pie -fno-stack-protector </span>
+
+<span class="n">__attribute__</span><span class="p">((</span><span class="n">constructor</span><span class="p">))</span>
+<span class="kt">void</span> <span class="nf">ignore_me</span><span class="p">(){</span>
+    <span class="n">setbuf</span><span class="p">(</span><span class="n">stdin</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+    <span class="n">setbuf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+    <span class="n">setbuf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">win</span><span class="p">(</span><span class="kt">int</span> <span class="n">arg1</span><span class="p">,</span> <span class="kt">int</span> <span class="n">arg2</span><span class="p">){</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">arg1</span> <span class="o">==</span> <span class="mh">0xdeadbeef</span> <span class="o">&amp;&amp;</span> <span class="n">arg2</span> <span class="o">==</span> <span class="mh">0xcafebabe</span><span class="p">){</span>
+        <span class="n">puts</span><span class="p">(</span><span class="s">"You're awesome"</span><span class="p">);</span>
+        <span class="n">execve</span><span class="p">(</span><span class="s">"/bin/sh"</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">environ</span><span class="p">){</span>
+    <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mh">0x60</span><span class="p">];</span>
+    <span class="n">puts</span><span class="p">(</span><span class="s">"Show me your creativity :P"</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"For now, Imma tell you a secret: %p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">buf</span><span class="p">);</span>
+    <span class="n">gets</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The program has three functions; ignore_me, win and main. “main” is a special function in C language. It is where the main functionality of the program lies. ignore_me is declared as a constructor here. Constructors are functions which are executed <em>before</em> “main”. Their counterparts are called de-constructors. They are executed <em>after</em> “main”. Here ignore_me just sets up buffering for the challenge. Lets take a closer look at main function. The function first allocates 0x60 bytes for a buffer called “buf”. Then it prints two lines. The first one is not important. The second one tells us the address of “buf” buffer. After that, it calls gets function. The <a href="https://man7.org/linux/man-pages/man3/gets.3.html">man page of gets</a> shouts “Never use this function”. Because, this function does not check if the destionation buffer can hold the data. This gives rise to buffer overflow. And the win function checks the first and second argument with some specific values and gives us shell if they match.</p>
+
+<h3 id="buffer-overflow">Buffer Overflow</h3>
+<p>This is a situation in which a program puts data in a buffer more than its capacity. This results in overwriting memory adjacent to the data region. Mostly, buffers are on stack and sensitive data related to program execution is also stored on stack. This way buffer overflows can be a serious threat in a computer program.
+Buffer overflow attacks overwrite the data related to program execution and control the program’s execution. The most important data on stack is saved RIP/EIP. This is the address where the program will start execution after main function. Overwriting it with something useful can get us a shell.
+Getting shell usually depends upon the situation.</p>

