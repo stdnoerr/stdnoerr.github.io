@@ -198,7 +198,7 @@ It takes two integers as arguments and compares their values with some constants
 <h1 id="exploitation">Exploitation</h1>
 <p>Now that we know the objective, we will try to achieve it. We will suppose that shellcoding is not possible and Non eXecutable stack protection is enabled (you can try this by compiling the code without <code class="language-plaintext highlighter-rouge">-zexecstack</code> option). Without shellcode, how can we set the registers to desired values? Well, for these cases we use Return-Oriented-Programming (ROP).</p>
 <h2 id="what-is-rop">What is ROP?</h2>
-<p>ROP is a technique against Non eXecutable stack protection. When NX is enabled, we cannot inject shellcode and do whatever we want because stack is set to have read and write permissions only (rw-). If you try to execute shellcode, you will get Segmentation Fault (SEGFAULT) because you are trying to execute something which is not marked executable. Jus like when you get Permission denied in linux when you try to execute a file which is not marked executable.<br />
+<p>ROP is a technique against Non eXecutable stack protection. When NX is enabled, we cannot inject shellcode and do whatever we want because stack is set to have read and write permissions only (rw-). If you try to execute shellcode, you will get Segmentation Fault (SEGFAULT) because you are trying to execute something which is not marked executable. Just like when you get Permission denied in linux when you try to execute a file which is not marked executable.<br />
 The idea behind ROP is to use useful pieces of code (gadgets) which are present in the binary or some library you can access to perform tasks you would have performed using shellcoding. e.g. setting registers, calling function, writing data etc.<br />
 The idea is to utilise the way <code class="language-plaintext highlighter-rouge">ret</code> (return) instruction works. It starts executing instructions at address which is on top of stack. You can use this behaviour to make a chain to do useful tasks.</p>
 
@@ -221,7 +221,7 @@ This is what we get for given binay.</p>
 0x0000000000401016 : ret
 0x0000000000401072 : ret 0x2f
 </code></pre></div></div>
-<p>We have what we needed. There are gadgets to set RDI and RSI.
+<p>We have got what we needed. There are gadgets to set RDI and RSI.
 (For the curious, because we don’t care about r15, we will put a junk value into it)</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0x000000000040129b : pop rdi ; ret
 0x0000000000401299 : pop rsi ; pop r15 ; ret
@@ -398,7 +398,7 @@ First we need to fill the payload with junk bytes to get upto RIP.</p>
 		  
 			 
 				<li><a href="/categories.html#pwn-training-ref">
-					pwn-training <span>(2)</span>
+					pwn-training <span>(3)</span>
 					
 				</a></li>
 			
@@ -467,7 +467,7 @@ First we need to fill the payload with junk bytes to get upto RIP.</p>
 		  <li class="previous"><a href="/pwn-training/2021/06/12/ret2shellcode.html" title="ret2shellcode">&larr; Previous</a></li>
 		  
 		  
-			<li class="next disabled"><a>Next &rarr;</a>
+		  <li class="next"><a href="/pwn-training/2021/07/29/format-string-leaking.html" title="Format string - leaking">Next &rarr;</a></li>
 		  
 		</ul>
 
