@@ -8,10 +8,10 @@ tags: [kernel]
 summary: Write for kernel challenge named "Pass" from GrabCON 2021 CTF.
 ---
 
-I played GrabCON CTF 2021 to check the challenges. "Pass" especially got my attention because it is a kernel exploitation challenge. I thought it is the best time I work on some kernel challenges. So, I will approach it as a beginner and try to explain as much as I can. I did not solve it during the CTF. Shoutout to `00xc#0275` from Scavengar Security for being the only person who solved it during the CTF. Checkout his [writeup](https://scavengersecurity.com/posts/grabcon-paas/) also.
+I played GrabCON CTF 2021 to check the challenges. "Pass" especially got my attention because it is a kernel exploitation challenge. I thought it is the best time I work on some kernel challenges. So, I will approach it as a beginner and try to explain as much as I can. I did not solve it during the CTF. Shoutout to `00xc#0275` from Scavengar Security for being the only person who solved it during the CTF. Checkout his [writeup](https://scavengersecurity.com/posts/grabcon-paas/) also. You can download the challenge file [here](https://github.com/stdnoerr/stdnoerr.github.io/tree/master/files/kernel/grabcon_pass/).
 
 # Environment Setup
-You get `bzImage`, `run.sh` and `printf.c` files and `initramfs` folder when you extract the provided files. (unfortunately, I don't have the zip file).<br>
+You get `bzImage`, `run.sh` and `printf.c` files and `initramfs` folder when you extract the provided file.<br>
 First we will extract `vmlinux` file from `bzImage` using [this](https://github.com/torvalds/linux/blob/master/scripts/extract-vmlinux) script. `vmlinux` is uncompressed kernel file. But, we need to convert this into an elf file for getting the symbols. For this, I used [this](https://github.com/marin-m/vmlinux-to-elf/) script. I named the elf file `vmlinux_elf`.<br>
 Second, we need to change some configuration to be able to debug the challenge. For a gdb connection, add `-gdb tcp::<port>` to the qemu command in `run.sh`. To connect to the connection, start gdb with the `vmlinux_elf` file. Then run `target remote :<port>`. Adding `-S` to the qemu will make it stop until the gdb is connected. I advise to disable kaslr, smep, smap and kpti for the purpose of debugging.<br>
 Lastly, to be able to read some files we will change the uid in `initramfs/init` file from `1000` to `0`.<br>
