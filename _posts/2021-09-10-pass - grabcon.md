@@ -4,7 +4,7 @@ title: GrabCON 2021 - Paas
 date: 2021-09-10 22:52
 category: kernel-pwn
 author: stdnoerr
-tags: [kernel]
+tags: [kernel, writeup]
 summary: Write for kernel challenge named "Pass" from GrabCON 2021 CTF.
 ---
 
@@ -24,7 +24,7 @@ find . -print0 | cpio --null -ov --format=newc | gzip -1 > ../initramfs.cpio.gz
 
 qemu-system-x86_64 -m 256M -initrd ../initramfs.cpio.gz -kernel ../bzImage -nographic -monitor /dev/null -append "nokaslr root=/dev/ram rw console=ttyS0 oops=panic paneic=1 quiet" -gdb tcp::9001 -S
 ```
-# Souce code analysis
+# Source code analysis
 Pass is short for Printf-as-a-syscall. In the provided kernel, a syscall named printf is added which takes an array of `char` pointers and implements some printf functionality. The source code is below: -
 ```c
 #include <linux/kernel.h>

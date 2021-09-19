@@ -152,10 +152,10 @@
 	   2021
 	 </span>
 	  <div class="article_body">
-	  <p>I played GrabCON CTF 2021 to check the challenges. “Pass” especially got my attention because it is a kernel exploitation challenge. I thought it is the best time I work on some kernel challenges. So, I will approach it as a beginner and try to explain as much as I can. I did not solve it during the CTF. Shoutout to <code class="language-plaintext highlighter-rouge">00xc#0275</code> from Scavengar Security for being the only person who solved it during the CTF. Checkout his <a href="https://scavengersecurity.com/posts/grabcon-paas/">writeup</a> also.</p>
+	  <p>I played GrabCON CTF 2021 to check the challenges. “Pass” especially got my attention because it is a kernel exploitation challenge. I thought it is the best time I work on some kernel challenges. So, I will approach it as a beginner and try to explain as much as I can. I did not solve it during the CTF. Shoutout to <code class="language-plaintext highlighter-rouge">00xc#0275</code> from Scavengar Security for being the only person who solved it during the CTF. Checkout his <a href="https://scavengersecurity.com/posts/grabcon-paas/">writeup</a> also. You can download the challenge file <a href="https://github.com/stdnoerr/stdnoerr.github.io/tree/master/files/kernel/grabcon_pass/">here</a>.</p>
 
 <h1 id="environment-setup">Environment Setup</h1>
-<p>You get <code class="language-plaintext highlighter-rouge">bzImage</code>, <code class="language-plaintext highlighter-rouge">run.sh</code> and <code class="language-plaintext highlighter-rouge">printf.c</code> files and <code class="language-plaintext highlighter-rouge">initramfs</code> folder when you extract the provided files. (unfortunately, I don’t have the zip file).<br />
+<p>You get <code class="language-plaintext highlighter-rouge">bzImage</code>, <code class="language-plaintext highlighter-rouge">run.sh</code> and <code class="language-plaintext highlighter-rouge">printf.c</code> files and <code class="language-plaintext highlighter-rouge">initramfs</code> folder when you extract the provided file.<br />
 First we will extract <code class="language-plaintext highlighter-rouge">vmlinux</code> file from <code class="language-plaintext highlighter-rouge">bzImage</code> using <a href="https://github.com/torvalds/linux/blob/master/scripts/extract-vmlinux">this</a> script. <code class="language-plaintext highlighter-rouge">vmlinux</code> is uncompressed kernel file. But, we need to convert this into an elf file for getting the symbols. For this, I used <a href="https://github.com/marin-m/vmlinux-to-elf/">this</a> script. I named the elf file <code class="language-plaintext highlighter-rouge">vmlinux_elf</code>.<br />
 Second, we need to change some configuration to be able to debug the challenge. For a gdb connection, add <code class="language-plaintext highlighter-rouge">-gdb tcp::&lt;port&gt;</code> to the qemu command in <code class="language-plaintext highlighter-rouge">run.sh</code>. To connect to the connection, start gdb with the <code class="language-plaintext highlighter-rouge">vmlinux_elf</code> file. Then run <code class="language-plaintext highlighter-rouge">target remote :&lt;port&gt;</code>. Adding <code class="language-plaintext highlighter-rouge">-S</code> to the qemu will make it stop until the gdb is connected. I advise to disable kaslr, smep, smap and kpti for the purpose of debugging.<br />
 Lastly, to be able to read some files we will change the uid in <code class="language-plaintext highlighter-rouge">initramfs/init</code> file from <code class="language-plaintext highlighter-rouge">1000</code> to <code class="language-plaintext highlighter-rouge">0</code>.<br />
@@ -167,7 +167,7 @@ find <span class="nb">.</span> <span class="nt">-print0</span> | cpio <span clas
 
 qemu-system-x86_64 <span class="nt">-m</span> 256M <span class="nt">-initrd</span> ../initramfs.cpio.gz <span class="nt">-kernel</span> ../bzImage <span class="nt">-nographic</span> <span class="nt">-monitor</span> /dev/null <span class="nt">-append</span> <span class="s2">"nokaslr root=/dev/ram rw console=ttyS0 oops=panic paneic=1 quiet"</span> <span class="nt">-gdb</span> tcp::9001 <span class="nt">-S</span>
 </code></pre></div></div>
-<h1 id="souce-code-analysis">Souce code analysis</h1>
+<h1 id="source-code-analysis">Source code analysis</h1>
 <p>Pass is short for Printf-as-a-syscall. In the provided kernel, a syscall named printf is added which takes an array of <code class="language-plaintext highlighter-rouge">char</code> pointers and implements some printf functionality. The source code is below: -</p>
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;linux/kernel.h&gt;
 #include &lt;linux/syscalls.h&gt;
@@ -1170,6 +1170,13 @@ I want to say thanks to <code class="language-plaintext highlighter-rouge">Bitfr
 				<li>
 					<a href="/tags.html#kernel-ref">
 					kernel <span>(1)</span>
+					,
+					</a>
+				</li>
+			 
+				<li>
+					<a href="/tags.html#writeup-ref">
+					writeup <span>(2)</span>
 					
 					</a>
 				</li>
@@ -1215,7 +1222,7 @@ I want to say thanks to <code class="language-plaintext highlighter-rouge">Bitfr
 		  <li class="previous"><a href="/pwn-training/2021/07/29/format-string-leaking.html" title="Format string - leaking">&larr; Previous</a></li>
 		  
 		  
-			<li class="next disabled"><a>Next &rarr;</a>
+		  <li class="next"><a href="/ctf/2021/09/19/ACSC2021.html" title="ACSC 2021 - Pwn challenges">Next &rarr;</a></li>
 		  
 		</ul>
 
