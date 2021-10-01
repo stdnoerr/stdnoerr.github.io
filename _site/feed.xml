@@ -8,7 +8,7 @@
 		
 			<item>
 				<title>HacktivityCTF 2021 pawn shop challenge writeup</title>
-				<description>&lt;p&gt;This is writeup for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Pawn Shop&lt;/code&gt; challenge from HacktivityCTF 2021. This challenge is good for getting started with heap exploitation and similar/identical challenge are commonly seen in CTFs. You can download the challenge files &lt;a href=&quot;&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+				<description>&lt;p&gt;This is writeup for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Pawn Shop&lt;/code&gt; challenge from HacktivityCTF 2021. This challenge is good for getting started with heap exploitation and similar/identical challenge are commonly seen in CTFs. You can download the challenge files &lt;a href=&quot;https://github.com/stdnoerr/stdnoerr.github.io/tree/master/files/heap/pawn_shop_hacktivity2021&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
 
 &lt;h1 id=&quot;analysis&quot;&gt;Analysis&lt;/h1&gt;
 &lt;h2 id=&quot;source-code-analysis&quot;&gt;Source Code Analysis&lt;/h2&gt;

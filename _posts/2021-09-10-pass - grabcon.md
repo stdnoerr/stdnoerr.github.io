@@ -208,7 +208,7 @@ Reading the code reveals that we can: -
 - use the direct access method to set `current_arg`. (indexes are 0-based)
 - use the width feature to increase `written_chars` to whatever value we want.<br>
 
-But, there are no checks. The pointers are not checked if they are userspace pointers or kernelspace. (userspace addresses have their first byte set to null). So, we have arbitrary read and write primitives here. Just like a format string vuln.<br>
+But, there are no checks. The pointers are not checked if they are userspace pointers or kernelspace. (userspace addresses have their first bit (MSB) set to null). So, we have arbitrary read and write primitives here. Just like a format string vuln.<br>
 Also, there is no null termination of the string to be printed.<br>
 The resultant string is written to `stdin`.
 
