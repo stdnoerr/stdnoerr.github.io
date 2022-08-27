@@ -352,7 +352,7 @@ qemu-system-x86_64 <span class="nt">-m</span> 256M <span class="nt">-initrd</spa
   <li>use the width feature to increase <code class="language-plaintext highlighter-rouge">written_chars</code> to whatever value we want.<br /></li>
 </ul>
 
-<p>But, there are no checks. The pointers are not checked if they are userspace pointers or kernelspace. (userspace addresses have their first byte set to null). So, we have arbitrary read and write primitives here. Just like a format string vuln.<br />
+<p>But, there are no checks. The pointers are not checked if they are userspace pointers or kernelspace. (userspace addresses have their first bit (MSB) set to null). So, we have arbitrary read and write primitives here. Just like a format string vuln.<br />
 Also, there is no null termination of the string to be printed.<br />
 The resultant string is written to <code class="language-plaintext highlighter-rouge">stdin</code>.</p>
 
@@ -1170,7 +1170,7 @@ I want to say thanks to <code class="language-plaintext highlighter-rouge">Bitfr
 			 
 				<li>
 					<a href="/tags.html#kernel-ref">
-					kernel <span>(2)</span>
+					kernel <span>(3)</span>
 					,
 					</a>
 				</li>
@@ -1243,7 +1243,7 @@ I want to say thanks to <code class="language-plaintext highlighter-rouge">Bitfr
 		<footer>
 			<hr/>
 			<p>
-				&copy; 2021 stdnoerr with <a href="http://jekyllrb.com/">Jekyll</a>. Theme: <a href="https://github.com/dbtek/dbyll">dbyll</a> by dbtek.
+				&copy; 2022 stdnoerr with <a href="http://jekyllrb.com/">Jekyll</a>. Theme: <a href="https://github.com/dbtek/dbyll">dbyll</a> by dbtek.
 			</p>
 		</footer>
 	</div>
