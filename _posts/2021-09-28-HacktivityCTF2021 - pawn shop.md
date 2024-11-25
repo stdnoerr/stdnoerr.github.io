@@ -1,6 +1,6 @@
 ---
 layout: post
-title: HacktivityCTF 2021 pawn shop challenge writeup
+title: HacktivityCTF 2021 - Pawn Shop
 date: 2021-09-28 21:02
 category: writeup
 author: stdnoerr

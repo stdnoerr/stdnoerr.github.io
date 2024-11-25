@@ -169,11 +169,11 @@ qemu-system-x86_64 <span class="nt">-m</span> 256M <span class="nt">-initrd</spa
 </code></pre></div></div>
 <h1 id="source-code-analysis">Source code analysis</h1>
 <p>Pass is short for Printf-as-a-syscall. In the provided kernel, a syscall named printf is added which takes an array of <code class="language-plaintext highlighter-rouge">char</code> pointers and implements some printf functionality. The source code is below: -</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;linux/kernel.h&gt;
-#include &lt;linux/syscalls.h&gt;
-#include &lt;linux/module.h&gt;
-#include &lt;linux/string.h&gt;
-#include &lt;linux/fdtable.h&gt;
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;linux/kernel.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;linux/syscalls.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;linux/module.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;linux/string.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;linux/fdtable.h&gt;</span><span class="cp">
 </span>
 <span class="n">MODULE_LICENSE</span><span class="p">(</span><span class="s">"GPL"</span><span class="p">);</span>
 
@@ -363,16 +363,16 @@ But, this approach has its own peculiarities. We need to read all the remaining 
 Also, fifos are unseekable. So, we cannot change the offset pointer to read any offset.<br />
 I created a helper function <code class="language-plaintext highlighter-rouge">read_ptr_stdin</code> to read a QWORD from the fifo file.<br />
 My setup is below: -</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;stdlib.h&gt;
-#include &lt;stdio.h&gt;
-#include &lt;stdint.h&gt;
-#include &lt;fcntl.h&gt;
-#include &lt;string.h&gt;
-#include &lt;unistd.h&gt;
-#include &lt;sys/types.h&gt;
-#include &lt;sys/stat.h&gt;
-#include &lt;sys/ioctl.h&gt;
-#include &lt;sys/syscall.h&gt;
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdint.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;fcntl.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;sys/types.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;sys/stat.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;sys/ioctl.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;sys/syscall.h&gt;</span><span class="cp">
 </span>
 <span class="cp">#define SYSCALL_NO 548
 </span>
@@ -759,16 +759,16 @@ Dump of assembler code for function prepare_creds:
 </code></pre></div></div>
 <h1 id="final-exploits">Final exploits</h1>
 <h2 id="overwriting-uids-in-task_struct-cred-1">Overwriting uids in task_struct-&gt;cred</h2>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;stdlib.h&gt;
-#include &lt;stdio.h&gt;
-#include &lt;stdint.h&gt;
-#include &lt;fcntl.h&gt;
-#include &lt;string.h&gt;
-#include &lt;unistd.h&gt;
-#include &lt;sys/types.h&gt;
-#include &lt;sys/stat.h&gt;
-#include &lt;sys/ioctl.h&gt;
-#include &lt;sys/syscall.h&gt;
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdint.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;fcntl.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;sys/types.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;sys/stat.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;sys/ioctl.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;sys/syscall.h&gt;</span><span class="cp">
 </span>
 <span class="cp">#define SYSCALL_NO 548
 </span>
@@ -880,16 +880,16 @@ Dump of assembler code for function prepare_creds:
 <span class="p">}</span>
 </code></pre></div></div>
 <h2 id="overwrite-task_struct-cred-to-init_cred-1">Overwrite task_struct-&gt;cred to init_cred</h2>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;stdlib.h&gt;
-#include &lt;stdio.h&gt;
-#include &lt;stdint.h&gt;
-#include &lt;fcntl.h&gt;
-#include &lt;string.h&gt;
-#include &lt;unistd.h&gt;
-#include &lt;sys/types.h&gt;
-#include &lt;sys/stat.h&gt;
-#include &lt;sys/ioctl.h&gt;
-#include &lt;sys/syscall.h&gt;
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdint.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;fcntl.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;sys/types.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;sys/stat.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;sys/ioctl.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;sys/syscall.h&gt;</span><span class="cp">
 </span>
 <span class="cp">#define SYSCALL_NO 548
 </span>
@@ -1014,16 +1014,16 @@ Dump of assembler code for function prepare_creds:
 
 </code></pre></div></div>
 <h2 id="modprobe-method-1">Modprobe method</h2>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;stdlib.h&gt;
-#include &lt;stdio.h&gt;
-#include &lt;stdint.h&gt;
-#include &lt;fcntl.h&gt;
-#include &lt;string.h&gt;
-#include &lt;unistd.h&gt;
-#include &lt;sys/types.h&gt;
-#include &lt;sys/stat.h&gt;
-#include &lt;sys/ioctl.h&gt;
-#include &lt;sys/syscall.h&gt;
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdint.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;fcntl.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;sys/types.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;sys/stat.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;sys/ioctl.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;sys/syscall.h&gt;</span><span class="cp">
 </span>
 <span class="cp">#define SYSCALL_NO 548
 </span>
@@ -1170,7 +1170,7 @@ I want to say thanks to <code class="language-plaintext highlighter-rouge">Bitfr
 			 
 				<li>
 					<a href="/tags.html#kernel-ref">
-					kernel <span>(3)</span>
+					kernel <span>(4)</span>
 					,
 					</a>
 				</li>
@@ -1243,7 +1243,7 @@ I want to say thanks to <code class="language-plaintext highlighter-rouge">Bitfr
 		<footer>
 			<hr/>
 			<p>
-				&copy; 2022 stdnoerr with <a href="http://jekyllrb.com/">Jekyll</a>. Theme: <a href="https://github.com/dbtek/dbyll">dbyll</a> by dbtek.
+				&copy; 2024 stdnoerr with <a href="http://jekyllrb.com/">Jekyll</a>. Theme: <a href="https://github.com/dbtek/dbyll">dbyll</a> by dbtek.
 			</p>
 		</footer>
 	</div>
