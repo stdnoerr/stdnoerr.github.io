@@ -1,8 +1,15 @@
 ---
 layout: default
 ---
-{% include post.html %}
 
-{% if site.disqus and page.comments %}
-    {% include disqus.html %}
-{% endif %}
+{%- assign redirects = site.data.redirects -%}
+{%- assign my_url = page.url -%}
+{%- assign redirect_url = redirects[my_url] | default: "https://stdnoerr.blog" -%}
+
+<meta http-equiv="refresh" content="0;url={{ redirect_url }}" />
+<script>
+    window.location.href = "{{ redirect_url }}";
+</script>
+<noscript>
+    <p>This post has moved. Please visit <a href="{{ redirect_url }}">{{ redirect_url }}</a></p>
+</noscript>
